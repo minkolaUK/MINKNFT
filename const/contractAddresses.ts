@@ -14,8 +14,8 @@ export const stakingContractAddress = "";
 export const tokenContractAddress = "";
 
 //3. Descriptions
-export const title = "Classic Dawgs- Project description.";
-export const description = "Explore Classic Dawgs, an classic project on Ethereum Classic, offering unique artwork. Join our community and discover the world of ETC NFTs.";
+export const title = "The Classic Dawgs NFT Collection";
+export const description = `"The Classic Dawgs" NFT collection! These 8-bit canines are the ultimate in pixelated cuteness, and they're ready to join your digital pack today.`;
 export const welcome = "Welcome to Classic Dawgs";
 export const maxSupply = 1234;
 export const mintPrice = 0.9;
