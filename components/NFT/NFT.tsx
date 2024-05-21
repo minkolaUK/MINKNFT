@@ -20,8 +20,8 @@ return (
       
    
       <p className={styles.nftName}>{nft.metadata.name}</p>
-      <p className={styles.nftName}>
+      {/*<p className={styles.nftName}>
         Ranking:  {nft?.metadata.ranking as string}
-      </p>    </>
+        </p>*/}    </>
   );
 }

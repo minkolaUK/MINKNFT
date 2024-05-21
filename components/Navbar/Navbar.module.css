@@ -32,7 +32,7 @@
   position: absolute;
   top: 80px;
   z-index: -1;
-  border-radius: 0px 5px 15px 0px;
+  border-radius: 3px;
  
 }
 
@@ -56,7 +56,7 @@
   position: relative;
   text-decoration: none;
   outline: none;
-  border-radius: 20px 5px 10px 5px;
+  border-radius: 3px;
   margin-right: 5px;
 }
 
@@ -75,7 +75,7 @@
   position: relative;
   text-decoration: none;
   outline: none;
-  border-radius: 20px 5px 10px 5px;
+  border-radius: 3px;
   margin: 1px;
   max-width: 80px;
 }

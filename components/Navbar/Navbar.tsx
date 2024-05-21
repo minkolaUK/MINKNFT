@@ -44,7 +44,7 @@ export function Navbar() {
               src="/images/x-icon/icon.png"
               width={48}
               height={48}
-              alt="Froggies"
+              alt=""
             />
           </Link>
         </div>
@@ -55,12 +55,13 @@ export function Navbar() {
             <Link  href={`/profile/${address}`} className={styles.linkheader}>
             WALLET
             </Link>
-            <Link  href="/stakingMon"  className={styles.linkheader} >
-            STAKE
+            <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader}>
+            RARITY SNIPER
             </Link>
-            <Link  href="/roadmap"  className={styles.linkheader} >
-            ROADMAP
-            </Link>
+
+
+            
+
            
         </div>
 
@@ -98,12 +99,10 @@ export function Navbar() {
         <Link  href={`/profile/${address}`} className={styles.linkheader} onClick={updateMenu}>
         WALLET
         </Link>
-        <Link  href="/stakingMon"  className={styles.linkheader} style={{ marginBottom: '10px' }} onClick={updateMenu}>
-        STAKE
+        <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader} onClick={updateMenu}>
+            RARITY SNIPER
         </Link>
-        <Link  href="/roadmap"  className={styles.linkheader} style={{ marginBottom: '10px' }} onClick={updateMenu}>
-        ROADMAP
-        </Link>
+
        
       </div>
     </div>

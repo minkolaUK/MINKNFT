@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Concert+One&family=Lato:wght@300;400&family=Roboto:wght@500&family=Titan+One&display=swap');
 
 :root {
-  --font-primary: 'Titan One', cursive;
+  --font-primary: 'Roboto', sans-serif;
   --font-secondary: 'Lato', sans-serif;
   --font-third: 'Concert One', cursive;
   --font-code: 'Roboto', sans-serif;
-  --bg-color: #fd973c;
+  --bg-color: #571dca;
   --font-color: #ffffff;
   --btn-bg-color: #ffffff;
-  --accent-color: #fd973c;
+  --accent-color: #7c3cfd;
   --black-accent-color: #212121;
   --header-shadow: #000 0px 0px 5px;
   --shadow-color: #91bbc9;
@@ -17,7 +17,7 @@
 html,
 body {  
   max-width: 100%;
-  background-image: url(/images/backgrounds/background.png);
+  background-image: url(/images/backgrounds/background.jpg);
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;

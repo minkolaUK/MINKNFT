@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css";
 import { NextPage } from "next";
 import Head from "next/head";
 import { abi } from "../const/abi"; // Import the contract ABI
-import { NFT_ADDRESS } from "../const/contractAddresses";
+import { NFT_ADDRESS, title, description, welcome } from "../const/contractAddresses";
 import MintContainer from "../components/Mint/MintContainer"; // Adjust the import path
 import { useEffect, useState } from "react";
 import { NFT } from "@thirdweb-dev/sdk";
@@ -50,9 +50,9 @@ const Home: NextPage = () => {
   return (
 
     <>
-    <Head>
-        <title>FROGGIES - Original Frog NFTs on Ethereum Classic</title>
-        <meta name="description" content="Explore FROGGIES, an NFT project on Ethereum Classic, offering unique artwork. Join our community and discover the world of Froggies NFTs." />
+   <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="apple-touch-icon" sizes="180x180" href="images/x-icon/apple-touch-icon.png"/>
@@ -116,7 +116,7 @@ const Home: NextPage = () => {
           <section className={styles.container}>
             <div>
               <h2 id="welcomeH2">Connect to MetaMask to Get Started</h2>
-              <h1 id="welcomeH1">Welcome to the Froggies</h1>
+              <h1 id="welcomeH1">{welcome}</h1>
             </div>
           </section>
         )}

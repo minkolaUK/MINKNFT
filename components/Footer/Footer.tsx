@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../../styles/Home.module.css'; // Import your CSS module
 import Image from 'next/image'; // Import the Image component from next/image
-import {NFT_ADDRESS} from '../../const/contractAddresses';
+import {NFT_ADDRESS, twitterLink, telegramLink, discordLink} from '../../const/contractAddresses';
 
 
 const Footer = () => {
@@ -12,13 +12,11 @@ const Footer = () => {
       <footer className={styles.footer}>
         
         <div className={styles.footer2}>
-          <a className={styles.iconFooter} href="https://discord.gg/zREvKfjNxs" target="_blank" rel="noopener noreferrer">
-            <Image src="/images/header/discord.webp" alt="Discord"  width={25} height={25}/>
-          </a>
-          <a className={styles.iconFooter} href="https://twitter.com/ETCZUKI" target="_blank" rel="noopener noreferrer">
+          
+          <a className={styles.iconFooter} href={twitterLink} target="_blank" rel="noopener noreferrer">
             <Image src="/images/header/twitter.webp" alt="Twitter"  width={25} height={25}  />
           </a>
-          <a className={styles.iconFooter} href="https://t.me/+PpAxMjHTAr1kMDNh" target="_blank" rel="noopener noreferrer">
+          <a className={styles.iconFooter} href={telegramLink} target="_blank" rel="noopener noreferrer">
             <Image src="/images/header/telegram.webp" alt="Telegram"   width={25} height={25}/>
           </a>
         </div>

@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import styles from "../../styles/Home.module.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { NFT_ADDRESS, title, description, welcome, maxSupply, mintPrice } from "../../const/contractAddresses";
 
 
 interface MintContainerProps {
@@ -21,7 +22,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
    
   useEffect(() => {
     // Update total price whenever quantity changes
-    setTotalPrice((prevTotalPrice) => parseFloat((quantity * 0.4).toFixed(1))); // Ensure to convert the string to a number
+    setTotalPrice((prevTotalPrice) => parseFloat((quantity * mintPrice).toFixed(1))); // Ensure to convert the string to a number
   }, [quantity]);
 
   const handleIncrement = () => {
@@ -132,7 +133,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
   
         // Calculate the progress percentage
         const mintedTokens = parseInt(totalSupply, 10);
-        const totalTokens = 7777;
+        const totalTokens = maxSupply;
         const percentage = (mintedTokens / totalTokens) * 100;
         setProgressPercentage(percentage);
   
@@ -167,19 +168,19 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
       pauseOnHover
       theme="light" /><div id="mintContainer" className="mintcontainer">
         <h2 id="mint">
-          Welcome to FROGGIES.
+          {welcome}
         </h2>
         <div className={styles.infocontainer}>
           <div>
             <h3>Minted/Supply</h3>
-            <div className={styles.infocontainer}><p id="minted">{tokenSupply}</p><p>/</p><p id="totalSupply">7777</p></div>
+            <div className={styles.infocontainer}><p id="minted">{tokenSupply}</p><p>/</p><p id="totalSupply">{maxSupply}</p></div>
             <div className={styles.progressbar}>
               <div className={styles.progress} style={{ width: `${progressPercentage}%` }}></div>
             </div>
           </div>
           <div>
             <h3>Price Per Mint</h3>
-            <p id="pricePerMint">0.4 ETC</p>
+            <p id="pricePerMint">{mintPrice} ETC</p>
           </div>
           <div>
             <h3>Max</h3>

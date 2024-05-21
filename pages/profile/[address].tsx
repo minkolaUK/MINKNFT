@@ -14,7 +14,7 @@ import { NFT as NFTType } from "@thirdweb-dev/sdk";
 import tokenPageStyles from "../../styles/Token.module.css";
 import { Flex, SimpleGrid , Text} from "@chakra-ui/react";
 import {
-  NFT_ADDRESS,
+  NFT_ADDRESS, projectNfts
 } from "..//../const/contractAddresses";
 
 
@@ -30,7 +30,8 @@ export default function ProfilePage() {
   
     const { data: ownedNfts, isLoading: loadingOwnedNfts } = useOwnedNFTs(
       nftCollection,
-      router.query.address as string
+      //router.query.address as string
+      "0x1E6C1c18e5973eE94aDF0B2990cD0174dcA57D0a"
     );
 
     
@@ -72,7 +73,7 @@ export default function ProfilePage() {
         >
           <div className={styles.data}>
             <h3>
-                Your Froggies
+                Your {projectNfts}
             </h3>
             <h3>
                 Total Owned = {totalOwned}
@@ -122,9 +123,9 @@ export default function ProfilePage() {
                 <h1 className={tokenPageStyles.title}>
                   {selectedNft.metadata.name}
                 </h1>
-                <p className={tokenPageStyles.collectionName}>
+                {/*<p className={tokenPageStyles.collectionName}>
                   Ranking:  {selectedNft?.metadata.ranking as string}
-                </p>
+                  </p>*/}
                 <h3 className={styles.descriptionTitle}>Traits</h3>
                 <SimpleGrid columns={2} spacing={4}>
                     {(selectedNft?.metadata?.attributes as { trait_type: string; value: string }[] || []).map(
