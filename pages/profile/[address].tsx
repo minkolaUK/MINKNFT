@@ -30,8 +30,8 @@ export default function ProfilePage() {
   
     const { data: ownedNfts, isLoading: loadingOwnedNfts } = useOwnedNFTs(
       nftCollection,
-      //router.query.address as string
-      "0x1E6C1c18e5973eE94aDF0B2990cD0174dcA57D0a"
+      router.query.address as string
+      //"0x1E6C1c18e5973eE94aDF0B2990cD0174dcA57D0a"
     );
 
     
