@@ -142,7 +142,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
         console.log("Minted: ", formattedSupply);
       } catch (error) {
         console.error('Error fetching token supply:', error);
-        setTokenSupply('7777'); // Return a string to handle large numbers
+        setTokenSupply('586'); // Return a string to handle large numbers
       }
     };
    
