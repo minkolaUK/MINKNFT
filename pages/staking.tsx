@@ -15,7 +15,7 @@ import NFTCard from "../components/NFT/NFTCard";
 import {
   NFT_ADDRESS,
   stakingContractAddress,
-  monContractAddress,
+  tokenContractAddress,
 } from "../const/contractAddresses";
 import stylesHome from "../styles/Home.module.css";
 import {abi} from '../const/abi'
@@ -36,7 +36,7 @@ import Link from "next/link";
     const { contract: froggieContract, isLoading: loadingFroggie, error:errorLoadingFroggie } = useContract(NFT_ADDRESS,abi);
 
     const { contract: tokenContract } = useContract(
-      monContractAddress,
+      tokenContractAddress,
       "token"
     );
     const { contract, isLoading } = useContract(stakingContractAddress);

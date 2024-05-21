@@ -54,7 +54,7 @@ export default function BurnedPage() {
         >
           <div className={styles.data}>
             <h3>
-                Burned Froggies
+                Burned Dawgs
             </h3>
             <h3>
                 Total Burned = {totalBurned}
