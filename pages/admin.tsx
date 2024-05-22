@@ -66,19 +66,6 @@ const ADMIN: NextPage = () => {
           /* Render content when connected */
           <div className={styles.section}>
             
-            <div className={styles.countdown} id="countdown" >
-            <h3>{etcBalance}</h3>
-            <Web3Button
-                contractAddress={NFT_ADDRESS}
-                action={async (contract) => {
-                  // Logic to execute when clicked
-                   await contract?.call("withdraw");
-                }}
-              >
-                Withdraw
-              </Web3Button>
-              
-            </div>
 
             {/* Airdrop Section */}
             <div className={styles.countdown}>
