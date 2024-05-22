@@ -710,6 +710,11 @@
   align-self: center;
 }
 
+.inputField {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
 @media (min-height: 780px) {
   .footer {
     position: fixed;

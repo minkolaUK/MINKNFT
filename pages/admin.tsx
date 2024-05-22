@@ -14,6 +14,9 @@ const ADMIN: NextPage = () => {
   const { contract, isLoading, error } = useContract(NFT_ADDRESS,abi);
   const connectionStatus = useConnectionStatus();
   const [etcBalance, setEtcBalance] = useState<number | null>(null);
+  // State for airdrop recipient
+  const [recipient, setRecipient] = useState<string>("");
+
 
   useEffect(() => {
     const fetchEtcBalance = async () => {
@@ -75,6 +78,26 @@ const ADMIN: NextPage = () => {
                 Withdraw
               </Web3Button>
               
+            </div>
+
+            {/* Airdrop Section */}
+            <div className={styles.countdown}>
+              <h3>Airdrop Tokens</h3>
+              <input
+                className={styles.inputField}
+                type="text"
+                placeholder="Recipient"
+                onChange={(e) => setRecipient(e.target.value)}
+              />
+              
+              <Web3Button
+                contractAddress={NFT_ADDRESS}
+                action={async (contract) => {
+                  await contract?.call("Airdrop", [recipient]);
+                }}
+              >
+                Airdrop
+              </Web3Button>
             </div>
 
             
