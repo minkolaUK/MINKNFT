@@ -811,3 +811,225 @@ export const abi =
         "type": "function"
     }
 ]
+
+export const rewardsabi = [
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_NFTcontract",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_MinimumToReward",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "TotalReward",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "User",
+                "type": "address"
+            }
+        ],
+        "name": "ClaimedAllRewards",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "InstanceIdentifier",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "TotalEther",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "EtherReward",
+                        "type": "uint256"
+                    }
+                ],
+                "indexed": false,
+                "internalType": "struct NFTRewardDistributor.RewardInstance",
+                "name": "NewInstanceDetails",
+                "type": "tuple"
+            }
+        ],
+        "name": "NewInstanceCreated",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "ClaimAllRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "TotalRewardOutput",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "len",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "GetTotalUnclaimed",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "Unclaimed",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "LatestClaim",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "MinimumToReward",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "NFTcontract",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "RewardInstances",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "InstanceIdentifier",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "TotalEther",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "EtherReward",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "TotalEtherInRewards",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "TotalTokens",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "UserTotalClaimed",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]

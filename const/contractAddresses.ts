@@ -10,6 +10,7 @@ export const ETHERSCAN_URL = "https://etc.blockscout.com";
 // Deploy your own: https://thirdweb.com/thirdweb.eth/MarketplaceV3
 export const MARKETPLACE_ADDRESS = "0x04A9672cae8D9664dDdA899516A230bB2298Aa6D";
 export const NFT_ADDRESS = "0x1808d50866e3E87b9210E1D7692Ae05Bfb81604f";
+export const REWARDSADDRESS = "0xBd0Df8e3C6B79764868d10B7Ee20ce3dBC5e7A66";
 export const stakingContractAddress = "";
 export const tokenContractAddress = "";
 
