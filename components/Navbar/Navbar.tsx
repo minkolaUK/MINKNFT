@@ -55,6 +55,9 @@ export function Navbar() {
             <Link  href={`/profile/${address}`} className={styles.linkheader}>
             WALLET
             </Link>
+            <Link  href={`/rewards`} className={styles.linkheader}>
+            REWARDS
+            </Link>
             <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader}>
             RARITY SNIPER
             </Link>
@@ -98,6 +101,9 @@ export function Navbar() {
         </Link>
         <Link  href={`/profile/${address}`} className={styles.linkheader} onClick={updateMenu}>
         WALLET
+        </Link>
+        <Link  href={`/rewards`} className={styles.linkheader} onClick={updateMenu}>
+        REWARDS
         </Link>
         <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader} onClick={updateMenu}>
             RARITY SNIPER
