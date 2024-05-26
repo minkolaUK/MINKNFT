@@ -6,6 +6,8 @@ import styles from "../styles/Home.module.css";
 import Head from "next/head";
 import { REWARDSADDRESS, title, description, welcome } from "../const/contractAddresses";
 import { ethers } from 'ethers';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Rewards() {
   const { contract } = useContract(REWARDSADDRESS, rewardsabi);
@@ -21,12 +23,36 @@ export default function Rewards() {
       try {
         const tx = await contract.call("ClaimAllRewards", [], { from: currentUserAddress });
         console.log("Claim transaction hash:", tx.hash);
+        
+        toast.success('🐸 CLAIM REWARD SUCCESSFUL!! \n Check Wallet for Rewards.', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+  
         // Optionally, you can add logic to listen for transaction confirmation
       } catch (error) {
         console.error("Error claiming rewards:", error);
+        
+        toast.error('❌ CLAIM FAILED!!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       }
     }
   };
+
   useEffect(() => {
     const fetchContractData = async () => {
       if (contract) {
@@ -60,6 +86,19 @@ export default function Rewards() {
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        />
 
       <Container maxWidth="lg">
         <div className={styles.main}>
