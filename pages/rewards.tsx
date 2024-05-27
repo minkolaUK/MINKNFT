@@ -36,10 +36,27 @@ export default function Rewards() {
         });
   
         // Optionally, you can add logic to listen for transaction confirmation
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error claiming rewards:", error);
-        
-        toast.error('❌ CLAIM FAILED!!', {
+  
+        let errorMessage = 'An unexpected error occurred';
+        if (error instanceof Error) {
+          const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
+          if (reasonMatch) {
+            errorMessage = reasonMatch[1];
+          } else {
+            errorMessage = error.message;
+          }
+        } else if (typeof error === 'string') {
+          const reasonMatch = error.match(/Reason: (.+?)(\n|$)/);
+          if (reasonMatch) {
+            errorMessage = reasonMatch[1];
+          } else {
+            errorMessage = error;
+          }
+        }
+  
+        toast.error(`❌ CLAIM FAILED!! \n ${errorMessage}`, {
           position: "bottom-center",
           autoClose: 5000,
           hideProgressBar: false,
