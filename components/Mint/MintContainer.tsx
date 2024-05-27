@@ -102,7 +102,36 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
           
           console.log("Failed to mint!");
         }
-      } catch(e) {
+      } catch (error: unknown) {
+        console.error("Error minting:", error);
+  
+        let errorMessage = 'An unexpected error occurred';
+        if (error instanceof Error) {
+          const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
+          if (reasonMatch) {
+            errorMessage = reasonMatch[1];
+          } else {
+            errorMessage = error.message;
+          }
+        } else if (typeof error === 'string') {
+          const reasonMatch = error.match(/Reason: (.+?)(\n|$)/);
+          if (reasonMatch) {
+            errorMessage = reasonMatch[1];
+          } else {
+            errorMessage = error;
+          }
+        }
+  
+        toast.error(`❌ MINT FAILED!! \n ${errorMessage}`, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         const mainText = document.getElementById("mainText");
         if (mainText){
           mainText.innerText = "Mint Failed";
@@ -111,8 +140,6 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
           mintButton.innerText = "Mint";
           mintButton.disabled = false;
         }
-
-        console.log(e);
       }
     }
   };
