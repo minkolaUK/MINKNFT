@@ -17,7 +17,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
 
    //Increment Section
    const [quantity, setQuantity] = useState<number>(1); // Specify quantity as a number
-   const [totalPrice, setTotalPrice] = useState<number>(0.4); // Specify totalPrice as a number
+   const [totalPrice, setTotalPrice] = useState<number>(1.2); // Specify totalPrice as a number
    const [mintedSuccess, setMintedSuccess] = useState(false);
    
   useEffect(() => {

@@ -19,7 +19,7 @@ export const title = "The Classic Dawgs NFT Collection";
 export const description = `"The Classic Dawgs" NFT collection! These 8-bit canines are the ultimate in pixelated cuteness, and they're ready to join your digital pack today.`;
 export const welcome = "Welcome to Classic Dawgs";
 export const maxSupply = 1234;
-export const mintPrice = 0.9;
+export const mintPrice = 1.2;
 export const projectNfts = "NFTs";
 
 //4. Social Media
