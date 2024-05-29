@@ -6,7 +6,7 @@ import {
     useOwnedNFTs,
   } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../../components/Container/Container";
 import NFTGrid from "../../components/NFT/NFTGrid";
 import styles from "../../styles/Profile.module.css";
@@ -15,7 +15,17 @@ import tokenPageStyles from "../../styles/Token.module.css";
 import { Flex, SimpleGrid , Text} from "@chakra-ui/react";
 import {
   NFT_ADDRESS, projectNfts
-} from "..//../const/contractAddresses";
+} from "../../const/contractAddresses";
+
+// Function to fetch ranking from rarity.json
+const fetchRarityRanking = async (tokenId: string) => {
+  const response = await fetch('/rarity.json'); // Adjust the path as needed
+  const data = await response.json();
+  
+  const nftData = data.find((nft: { id: string; }) => nft.id === tokenId);
+  console.log("Data: ", nftData)
+  return nftData ? nftData.rank : null;
+};
 
 
 export default function ProfilePage() {
@@ -33,11 +43,21 @@ export default function ProfilePage() {
       router.query.address as string
       //"0x1E6C1c18e5973eE94aDF0B2990cD0174dcA57D0a"
     );
-
-    
     const totalOwned = ownedNfts?.length;
-
     const [transferAddress, setTransferAddress] = useState("");
+
+    const [ranking, setRanking] = useState(null);
+
+    useEffect(() => {
+      const getRanking = async () => {
+        if (selectedNft) {
+          const ranking = await fetchRarityRanking(selectedNft.metadata.id);
+          setRanking(ranking);
+        }
+      };
+      getRanking();
+    }, [selectedNft]);
+    
     console.log("NFT: ", selectedNft)
 
 
@@ -123,9 +143,9 @@ export default function ProfilePage() {
                 <h1 className={tokenPageStyles.title}>
                   {selectedNft.metadata.name}
                 </h1>
-                {/*<p className={tokenPageStyles.collectionName}>
-                  Ranking:  {selectedNft?.metadata.ranking as string}
-                  </p>*/}
+                <p className={tokenPageStyles.collectionName}>
+                Ranking: {ranking !== null ? ranking : 'Loading...'}
+                </p>
                 <h3 className={styles.descriptionTitle}>Traits</h3>
                 <SimpleGrid columns={2} spacing={4}>
                     {(selectedNft?.metadata?.attributes as { trait_type: string; value: string }[] || []).map(
