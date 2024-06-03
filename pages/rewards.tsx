@@ -123,8 +123,8 @@ export default function Rewards() {
             <>
              
               <div className={styles.countdown}>
-                <h2>Your Total Claimed Rewards: {totalUserClaimed}</h2>
-                <h2>Your Total Unclaimed Rewards: {unclaimedRewards}</h2>
+                <h2>Your Total Claimed Rewards: {totalUserClaimed} $ETC</h2>
+                <h2>Your Total Unclaimed Rewards: {unclaimedRewards} $ETC</h2>
                 <button className={styles.btn} onClick={handleClaimRewards}>Claim Rewards</button>
 
               </div>
