@@ -26,7 +26,7 @@ import {
 } from "../const/contractAddresses";
 import NFTGrid from "../components/NFT/NFTGrid";
 
-const NFTcontract = "0x5b2e0227d4Fd0F5b091663A8abD275952586d311"
+const NFTcontract = "0xD7BfC3360138C78F7c286C755964c45BB35cA6a0"
 
 const burnAddres = "0x000000000000000000000000000000000000dEaD"
 

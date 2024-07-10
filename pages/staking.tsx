@@ -65,7 +65,7 @@ import Link from "next/link";
   const isApproved = await froggieContract?.call("isApprovedForAll", [address, stakingContractAddress]);
 
   const toastSuccess = () => {
-      toast.success('STAKING SUCCESSFUL!!', {
+      toast.success('STAKING MINK NFT SUCCESSFUL!!', {
           position: "bottom-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -77,7 +77,7 @@ import Link from "next/link";
         });
   }
   const toastFail = () => {
-      toast.success('STAKING FAILED!!', {
+      toast.success('STAKING MINK NFT FAILED!!', {
           position: "bottom-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -118,8 +118,8 @@ import Link from "next/link";
         <div className={stylesHome.main}>
         
                 <div className={stylesHome.stakingContainer}>
-                    <h1 className={stylesHome.h1}>STAKE YOUR FROGGIES</h1>
-                    <p style={{color:"gold", fontWeight:'bolder', fontSize:'large'}}>Rate: 4.2069 Mon/Froggie/Day</p>
+                    <h1 className={stylesHome.h1}>STAKE YOUR MINK NFT</h1>
+                    <p style={{color:"gold", fontWeight:'bolder', fontSize:'large'}}>Rate: 4.2069 Mink Coin Per Day</p>
                     {!address ? (
                         <ConnectWallet />
                     ) : (
