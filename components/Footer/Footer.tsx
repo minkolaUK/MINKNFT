@@ -16,26 +16,15 @@ const Footer = () => {
           <a className={styles.iconFooter} href={twitterLink} target="_blank" rel="noopener noreferrer">
             <Image src="/images/header/twitter.webp" alt="Twitter"  width={25} height={25}  />
           </a>
-          <a className={styles.iconFooter} href={telegramLink} target="_blank" rel="noopener noreferrer">
-            <Image src="/images/header/telegram.webp" alt="Telegram"   width={25} height={25}/>
+          <a className={styles.iconFooter} href={discordLink} target="_blank" rel="noopener noreferrer">
+            <Image src="/images/header/discord.webp" alt="Discord"   width={25} height={25}/>
           </a>
         </div>
 
-      <footer className={styles.footer2}>
-        <a href={`https://blockscout.com/etc/mainnet/address/${contract}/contracts#address-tabs`}>
-          <p>CONTRACT</p>
-        </a>
-      </footer>
-
-      <footer className={styles.footer2}>
+        <footer className={styles.footer2}>
         <div className={styles.links}>
           <div className={styles.footer1}>
-            <p>
-              COPYRIGHT © 2024. POWERED BY{' '}
-              <a href="https://www.ethereumclassic.org" className={styles.link}>
-              ETHEREUMCLASSIC.
-              </a>
-            </p>
+            <p>© 2024 Mink Coin. All rights reserved.</p>
           </div>
         </div>
       </footer>

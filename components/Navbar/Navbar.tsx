@@ -52,19 +52,18 @@ export function Navbar() {
             <Link  href="/" className={styles.linkheader}>
             MINT
             </Link>
-            <Link  href={`/profile/${address}`} className={styles.linkheader}>
-            WALLET
+            <Link  href={`/staking`} className={styles.linkheader}>
+            STAKING
             </Link>
             <Link  href={`/rewards`} className={styles.linkheader}>
             REWARDS
             </Link>
-            <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader} target="_blank">
-            RARITY SNIPER
+            <Link  href={`/burned`} className={styles.linkheader}>
+            BURNED
             </Link>
-
-
-            
-
+            <Link  href={`/roadmap`} className={styles.linkheader}>
+            MAP
+            </Link>
            
         </div>
 
@@ -114,4 +113,3 @@ export function Navbar() {
     </div>
   );
 }
-

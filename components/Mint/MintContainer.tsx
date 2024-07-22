@@ -235,7 +235,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
           </div>
           <div>
             <h3>Max</h3>
-            <p id="maxPerMint">20</p>
+            <p id="maxPerMint">1</p>
           </div>
         </div>
         <div className={styles.mintqty}>
@@ -246,7 +246,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
               type="number"
               value={quantity}
               min="1"
-              max="20"
+              max="1"
               readOnly />
             <button className={`${styles.inputnumberincrement} ${styles.btn}`} onClick={handleIncrement}>+</button>
           </span>

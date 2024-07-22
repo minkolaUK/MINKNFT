@@ -32,7 +32,8 @@ const Roadmap: NextPage = () => {
           /* Render content when connected */
           <div className={styles.section}>
            <div className={styles.roadmapContainer}>
-           <Image src="/images/roadmap.jpg" alt="Froggies Roadmap" className={styles.roadmapImage} /></div>
+           <Image src="/images/roadmap.jpg" alt="roadmap" width={500} height={300} className={styles.roadmapImage} /></div>
+
            <div className={styles.roadmap}>
             <h1>Roadmap</h1>
             <ul>
@@ -56,7 +57,7 @@ const Roadmap: NextPage = () => {
           <section className={styles.container}>
             <div>
               <h2 id="welcomeH2">Connect to MetaMask to Get Started</h2>
-              <h1 id="welcomeH1">Welcome to the Froggies</h1>
+              <h1 id="welcomeH1">MINK NFT Collection</h1>
             </div>
           </section>
         )}

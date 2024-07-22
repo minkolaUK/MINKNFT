@@ -9,22 +9,24 @@ export const ETHERSCAN_URL = "https://etc-mordor.blockscout.com";
 
 // 2. The address of the marketplace V3 smart contract.
 // Deploy your own: https://thirdweb.com/thirdweb.eth/MarketplaceV3
-export const MARKETPLACE_ADDRESS = "";
+export const MARKETPLACE_ADDRESS = "0xcb1043277cEf7B7f1CC811CcE0321b9Ba643a3d7";
 export const NFT_ADDRESS = "0xD7BfC3360138C78F7c286C755964c45BB35cA6a0";
-export const REWARDSADDRESS = "";
-export const stakingContractAddress = "";
-export const tokenContractAddress = "";
+export const REWARDSADDRESS = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
+export const stakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
+export const tokenContractAddress = "0xcbb3DFb966C2A552E486276FA2813BA5618541D1";
+export const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
 //3. Descriptions
 export const title = "Mink NFT Collection";
-export const description = ``;
-export const welcome = "Welcome to Mink NFTs";
+export const description = `"MINK NFT's" Are you  ready to join your digital revolution today.`;
+export const welcome = "Hello! and Welcome - MINK NFT";
 export const maxSupply = 50;
-export const mintPrice = 0.2;
+export const mintPrice = 0.5;
 export const projectNfts = "NFTs";
 export const maxPerWallet = 5;
 
 //4. Social Media
-export const twitterLink = "https://twitter.com/";
-export const discordLink = ""
-export const telegramLink = ""
+export const twitterLink = "https://x.com/Mink11904498503";
+export const discordLink = "https://discord.com/invite/xDTuxBVK"
+export const telegramLink = "https://minkcoin.netlify.app/"
+

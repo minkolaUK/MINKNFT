@@ -20,7 +20,7 @@ interface ClaimContainerProps {
 const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, error}) => {
 
   const currentUserAddress = useAddress();
-  const { contract: TokenContract, isLoading: loadingToken, error: TokenError }  = useContract("0x731e2E78c318f6763DbBc9EFA4675a8061C11164")
+  const { contract: TokenContract, isLoading: loadingToken, error: TokenError }  = useContract("0x9E30F684E03774D0380aa6c6A8151e4789b98a6d")
   const { mutateAsync: approve, isLoading: loadingApprove } = useContractWrite(TokenContract, "approve")
 
    //Increment Section
@@ -79,7 +79,7 @@ const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, er
           claimButton.innerHTML = "Claim";
           }
           
-          toast.success('🐸 CLAIM SUCCESSFUL!! \n Check Wallet for Mints.', {
+          toast.success('CLAIM SUCCESSFUL!! \n Check Galery for Mints.', {
             position: "bottom-center",
             autoClose: 5000,
             hideProgressBar: false,
@@ -168,10 +168,10 @@ const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, er
     theme="light"
     />
     <div id="claimContainer" className="mintcontainer">
-      <h2 id="claimHeading">Claim Your Froggie NFT</h2>
+      <h2 id="claimHeading">Claim Your MINK NFT</h2>
       <p>
-        Welcome to FROGGIES.
-        <br />You will be asked to approve the transfer of Froggie Claim Tokens(FCT)
+        Welcome to MINK NFT Collection.
+        <br />You will be asked to approve the transfer Mink Coin(MINK)
       </p>
       <button
         id="claimButton"
@@ -187,4 +187,3 @@ const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, er
 };
 
 export default MintContainer;
-

@@ -26,9 +26,9 @@ import {
 } from "../const/contractAddresses";
 import NFTGrid from "../components/NFT/NFTGrid";
 
-const NFTcontract = "0x5b2e0227d4Fd0F5b091663A8abD275952586d311"
+const NFTcontract = "0xD7BfC3360138C78F7c286C755964c45BB35cA6a0"
 
-const burnAddres = "0x000000000000000000000000000000000000dEaD"
+const burnAddres = "0xD7BfC3360138C78F7c286C755964c45BB35cA6a0"
 
 
 
@@ -54,7 +54,7 @@ export default function BurnedPage() {
         >
           <div className={styles.data}>
             <h3>
-                Burned Dawgs
+                Burned Mink NFT's
             </h3>
             <h3>
                 Total Burned = {totalBurned}
@@ -71,7 +71,7 @@ export default function BurnedPage() {
                     overrideOnclickBehavior={(nft) => {
                       setSelectedNft(nft);
                     }}
-                    emptyText={`Looks like you don't own any NFTs in the collection. Head to the buy page to buy some!`}
+                    emptyText={`Looks like you havent burned any Mink NFTs yet`}
                   />
                 </>
               ) : null}

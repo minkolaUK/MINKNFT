@@ -41,7 +41,7 @@ export default function ProfilePage() {
     const { data: ownedNfts, isLoading: loadingOwnedNfts } = useOwnedNFTs(
       nftCollection,
       router.query.address as string
-      //"0x1E6C1c18e5973eE94aDF0B2990cD0174dcA57D0a"
+      //"0xD7BfC3360138C78F7c286C755964c45BB35cA6a0"
     );
     const totalOwned = ownedNfts?.length;
     const [transferAddress, setTransferAddress] = useState("");
@@ -110,7 +110,7 @@ export default function ProfilePage() {
                     overrideOnclickBehavior={(nft) => {
                       setSelectedNft(nft);
                     }}
-                    emptyText={`Looks like you don't own any NFTs in the collection. Head to the buy page to buy some!`}
+                    emptyText={`Looks like you don't own any Mink NFT's in the collection. Head to the mint page to buy some!`}
                   />
           
                 </>
