@@ -98,17 +98,19 @@ export function Navbar() {
         <Link  href="/" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '10px' }}>
         MINT
         </Link>
-        <Link  href={`/profile/${address}`} className={styles.linkheader} onClick={updateMenu}>
-        WALLET
+        <Link  href={`/staking`} className={styles.linkheader} onClick={updateMenu}>
+        STAKING
         </Link>
         <Link  href={`/rewards`} className={styles.linkheader} onClick={updateMenu}>
         REWARDS
         </Link>
-        <Link  href={`https://raritysniper.com/the-classic-dawgs`} className={styles.linkheader} onClick={updateMenu} target="_blank">
-            RARITY SNIPER
+        <Link  href={`/burned`} className={styles.linkheader} onClick={updateMenu}>
+        BURNED
+        </Link>
+        <Link  href={`/roadmap`} className={styles.linkheader}>
+        MAP
         </Link>
 
-       
       </div>
     </div>
   );
