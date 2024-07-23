@@ -1,7 +1,18 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  basePath: "",
-};
+const isProd = process.env.NODE_ENV === 'production';
 
-module.exports = nextConfig;
+module.exports = {
+  assetPrefix: isProd ? '/MINKNFT/' : '',
+  images: {
+    loader: 'akamai',
+    path: '',
+  },
+  exportPathMap: async function (
+    defaultPathMap,
+    { dev, dir, outDir, distDir, buildId }
+  ) {
+    return {
+      '/': { page: '/' },
+      // Add other pages if necessary
+    }
+  },
+};
