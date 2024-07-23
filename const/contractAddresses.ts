@@ -19,14 +19,14 @@ export const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 //3. Descriptions
 export const title = "Mink NFT Collection";
 export const description = `"MINK NFT's" Are you  ready to join your digital revolution today.`;
-export const welcome = "Hello! and Welcome - MINK NFT";
+export const welcome = "Welcome to the MINK NFT Collection";
 export const maxSupply = 50;
-export const mintPrice = 0.5;
+export const mintPrice = 0.2;
 export const projectNfts = "NFTs";
-export const maxPerWallet = 5;
+export const maxPerWallet = 50;
 
 //4. Social Media
 export const twitterLink = "https://x.com/Mink11904498503";
 export const discordLink = "https://discord.com/invite/xDTuxBVK"
-export const telegramLink = "https://minkcoin.netlify.app/"
+export const telegramLink = "https://discord.com/invite/xDTuxBVK"
 

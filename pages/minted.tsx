@@ -95,7 +95,7 @@ useEffect(() => {
         >
           <div className={styles.data}>
             <h3>
-                Minted MINK NFT's
+                Minted MINK NFT&apos;s
             </h3>
             <h3>
                 Total Minted = {tokenSupply}

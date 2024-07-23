@@ -13,6 +13,8 @@ import {
 import styles from "../../styles/Home.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import Image from 'next/image';
+
 
 
 interface NFTCardProps {
@@ -56,7 +58,7 @@ const NFTCard: FC<NFTCardProps> = ({ tokenId }) => {
           
           {!loadingMetadata && nft.metadata &&
               <div>
-                <img className={styles.nftMedia} src={nft.metadata.image as string} alt="Froggie" />
+                <img className={styles.nftMedia} src={nft.metadata.image as string} alt="minknft" />
 
               </div>
           }

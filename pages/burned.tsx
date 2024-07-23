@@ -54,7 +54,7 @@ export default function BurnedPage() {
         >
           <div className={styles.data}>
             <h3>
-                Burned Mink NFT's
+                Burned Mink NFT
             </h3>
             <h3>
                 Total Burned = {totalBurned}
@@ -71,7 +71,7 @@ export default function BurnedPage() {
                     overrideOnclickBehavior={(nft) => {
                       setSelectedNft(nft);
                     }}
-                    emptyText={`Looks like you havent burned any Mink NFTs yet`}
+                    emptyText={'Nothing to see here'}
                   />
                 </>
               ) : null}

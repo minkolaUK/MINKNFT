@@ -55,14 +55,8 @@ export function Navbar() {
             <Link  href={`/staking`} className={styles.linkheader}>
             STAKING
             </Link>
-            <Link  href={`/rewards`} className={styles.linkheader}>
-            REWARDS
-            </Link>
             <Link  href={`/burned`} className={styles.linkheader}>
             BURNED
-            </Link>
-            <Link  href={`/roadmap`} className={styles.linkheader}>
-            MAP
             </Link>
            
         </div>
@@ -83,7 +77,7 @@ export function Navbar() {
         switchToActiveChain={true}
         modalSize={"compact"}
         welcomeScreen={{
-          title: "Welcome to Froggies.",
+          title: "Welcome to the Mink NFT's.",
           subtitle:
             "Connect your wallet to get started.",
         }}
@@ -101,14 +95,8 @@ export function Navbar() {
         <Link  href={`/staking`} className={styles.linkheader} onClick={updateMenu}>
         STAKING
         </Link>
-        <Link  href={`/rewards`} className={styles.linkheader} onClick={updateMenu}>
-        REWARDS
-        </Link>
         <Link  href={`/burned`} className={styles.linkheader} onClick={updateMenu}>
         BURNED
-        </Link>
-        <Link  href={`/roadmap`} className={styles.linkheader}>
-        MAP
         </Link>
 
       </div>

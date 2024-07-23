@@ -1,3 +1,4 @@
+export { rewardsabi } from './rewardsabi'; 
 export const abi = 
 [
     {
