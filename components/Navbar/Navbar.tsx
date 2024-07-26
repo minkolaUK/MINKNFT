@@ -80,7 +80,7 @@ export function Navbar() {
         <Link href="/staking" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
           STAKING
         </Link>
-        <Link href="https://minkcoin.netlify.app/" target="_blank" rel="noopener noreferrer" className={styles.linkheader} onClick={updateMenu}>
+        <Link href="https://minkcoin.netlify.app" target="_blank" rel="noopener noreferrer" className={styles.linkheader} onClick={updateMenu}>
           MINKCOIN
         </Link>
       </div>
