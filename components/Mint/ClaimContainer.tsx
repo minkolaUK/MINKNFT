@@ -79,7 +79,7 @@ const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, er
           claimButton.innerHTML = "Claim";
           }
           
-          toast.success('CLAIM SUCCESSFUL!! \n Check Galery for Mints.', {
+          toast.success('CLAIM SUCCESSFUL!! \n Check Staking for Mints.', {
             position: "bottom-center",
             autoClose: 5000,
             hideProgressBar: false,

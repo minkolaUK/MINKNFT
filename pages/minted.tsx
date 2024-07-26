@@ -25,7 +25,7 @@ import {
   NETWORK,
 } from "../const/contractAddresses";
 
-const NFTcontract = "0x5b2e0227d4Fd0F5b091663A8abD275952586d311"
+const NFTcontract = "0xD7BfC3360138C78F7c286C755964c45BB35cA6a0"
 
 export default function MintedPage() {
 
@@ -95,7 +95,7 @@ useEffect(() => {
         >
           <div className={styles.data}>
             <h3>
-                Minted DAWGS
+                Minted MINK NFT&apos;s
             </h3>
             <h3>
                 Total Minted = {tokenSupply}

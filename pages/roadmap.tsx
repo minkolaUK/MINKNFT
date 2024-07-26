@@ -32,18 +32,19 @@ const Roadmap: NextPage = () => {
           /* Render content when connected */
           <div className={styles.section}>
            <div className={styles.roadmapContainer}>
-           <Image src="/images/roadmap.jpg" alt="Froggies Roadmap" className={styles.roadmapImage} /></div>
+           <Image src="/images/roadmap.jpg" alt="roadmap" width={500} height={300} className={styles.roadmapImage} /></div>
+
            <div className={styles.roadmap}>
             <h1>Roadmap</h1>
             <ul>
-              <li>Establish Froggy social media presence to promote the upcoming minting.</li>
-              <li>Launch Froggie claim phase to allow users to secure their NFTs.</li>
+              <li>Establish Mink social media presence to promote the upcoming minting.</li>
+              <li>Launch claim phase to allow users to secure their NFTs.</li>
               <li>Commence minting phase following the completion of the claim phase.</li>
               <li>Conduct community giveaways throughout the initial month of minting.</li>
-              <li>Initiate the burn phase on February 4th.</li>
-              <li>Launch staking opportunities starting February 4th.</li>
-              <li>Set the yield for Froggies at 4.2069.</li>
-              <li>Introduce the live marketplace for buying and selling Froggies.</li>  
+              <li>Initiate the burn phase on September 1th.</li>
+              <li>Launch staking opportunities starting September 1th.</li>
+              <li>Set the yield for Mink at 4.2069.</li>
+              <li>Introduce the live marketplace for buying and selling Mink NFTs.</li>  
               <li>Explore collaborations with other projects.</li>
            </ul>
            </div>
@@ -56,7 +57,7 @@ const Roadmap: NextPage = () => {
           <section className={styles.container}>
             <div>
               <h2 id="welcomeH2">Connect to MetaMask to Get Started</h2>
-              <h1 id="welcomeH1">Welcome to the Froggies</h1>
+              <h1 id="welcomeH1">MINK NFT Collection</h1>
             </div>
           </section>
         )}

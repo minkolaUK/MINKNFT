@@ -17,88 +17,72 @@ export function Navbar() {
 
   // toggle burger menu change
   const updateMenu = () => {
-    if(!isMenuClicked) {
-        setBurgerClass(`${styles.burger_bar} ${styles.clicked}`);
-        setMenuClass(`${styles.menu} ${styles.visible}`);
-    }
-    else {
-        setBurgerClass(`${styles.burger_bar} ${styles.unclicked}`);
-        setMenuClass(`${styles.menu} ${styles.hidden}`);
+    if (!isMenuClicked) {
+      setBurgerClass(`${styles.burger_bar} ${styles.clicked}`);
+      setMenuClass(`${styles.menu} ${styles.visible}`);
+    } else {
+      setBurgerClass(`${styles.burger_bar} ${styles.unclicked}`);
+      setMenuClass(`${styles.menu} ${styles.hidden}`);
     }
     setIsMenuClicked(!isMenuClicked);
-}
-  
-  return (
+  };
 
-    <div className={styles.navContainer}>      
-      
+  return (
+    <div className={styles.navContainer}>
       <nav className={styles.nav}>
-      <div className={styles.burger_menu} onClick={updateMenu}>
-            <div className={burger_class} ></div>
-            <div className={burger_class} ></div>
-            <div className={burger_class} ></div>
-          </div>
+        <div className={styles.burger_menu} onClick={updateMenu} aria-label="Toggle navigation menu">
+          <div className={burger_class}></div>
+          <div className={burger_class}></div>
+          <div className={burger_class}></div>
+        </div>
         <div className={styles.navLeft}>
           <Link href="/" className={`${styles.homeLink} ${styles.navLeft}`}>
             <Image
               src="/images/x-icon/icon.png"
               width={48}
               height={48}
-              alt=""
+              alt="Home"
             />
           </Link>
         </div>
         <div className={styles.navMiddle}>
-            <Link  href="/" className={styles.linkheader}>
-            MINT
-            </Link>
-            <Link  href={`/staking`} className={styles.linkheader}>
-            STAKING
-            </Link>
-            <Link  href={`/burned`} className={styles.linkheader}>
-            BURNED
-            </Link>
-           
+          <Link href="/" className={styles.linkheader}>MINT</Link>
+          <Link href="/staking" className={styles.linkheader}>STAKING</Link>
+          <a href="https://minkcoin.netlify.app/" target="_blank" rel="noopener noreferrer" className={styles.linkheader}>MINKCOIN</a>
         </div>
-
         <div className={styles.navRight}>
           <div className={styles.navConnect}>
-          <ConnectWallet
-        theme={darkTheme({
-          colors: {
-            modalBg: "#0d120f",
-            dropdownBg: "#0d120f",
-            connectedButtonBg: "#21312a",
-            secondaryText: "#5b8e39",
-          },
-        })}
-        btnTitle={"Connect"}
-        modalTitle={"Connect Wallet"}
-        switchToActiveChain={true}
-        modalSize={"compact"}
-        welcomeScreen={{
-          title: "Welcome to the Mink NFT's.",
-          subtitle:
-            "Connect your wallet to get started.",
-        }}
-      />
-        </div>
-        
-          
+            <ConnectWallet
+              theme={darkTheme({
+                colors: {
+                  modalBg: "#0d120f",
+                  dropdownBg: "#0d120f",
+                  connectedButtonBg: "#21312a",
+                  secondaryText: "#5b8e39",
+                },
+              })}
+              btnTitle={"Connect"}
+              modalTitle={"Connect Wallet"}
+              switchToActiveChain={true}
+              modalSize={"compact"}
+              welcomeScreen={{
+                title: "Welcome to the Mink NFTs.",
+                subtitle: "Connect your wallet to get started.",
+              }}
+            />
+          </div>
         </div>
       </nav>
       <div className={menu_class}>
-       
-        <Link  href="/" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '10px' }}>
-        MINT
+        <Link href="/" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
+          MINT
         </Link>
-        <Link  href={`/staking`} className={styles.linkheader} onClick={updateMenu}>
-        STAKING
+        <Link href="/staking" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
+          STAKING
         </Link>
-        <Link  href={`/burned`} className={styles.linkheader} onClick={updateMenu}>
-        BURNED
+        <Link href="https://minkcoin.netlify.app/" target="_blank" rel="noopener noreferrer" className={styles.linkheader} onClick={updateMenu}>
+          MINKCOIN
         </Link>
-
       </div>
     </div>
   );

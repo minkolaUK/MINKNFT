@@ -96,7 +96,7 @@ const ADMIN: NextPage = () => {
           <section className={styles.container}>
             <div>
               <h2 id="welcomeH2">Connect to MetaMask to Get Started</h2>
-              <h1 id="welcomeH1">Welcome to the Froggies</h1>
+              <h1 id="welcomeH1">Mink NFT Collection</h1>
             </div>
           </section>
         )}

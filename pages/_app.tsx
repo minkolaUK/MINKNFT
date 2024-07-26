@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
       supportedChains={[NETWORK]}
-      clientId={"a330a7cda7e0e88154090ddfffc658f7"}
+      clientId={"4a1257c53df9fb4ef5f9c1d8984d1397"}
       activeChain={NETWORK}
       locale={en()}
       supportedWallets={[

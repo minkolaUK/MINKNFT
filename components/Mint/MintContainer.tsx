@@ -66,7 +66,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
           mintButton.disabled = false;
           mintButton.innerHTML = "MINT";
         }
-        toast.success('🐸 MINT SUCCESSFUL!! \n Check Wallet for Mints.', {
+        toast.success('MINT SUCCESSFUL!! \n Check Wallet for Mints.', {
           position: "bottom-center",
           autoClose: 5000,
           hideProgressBar: false,

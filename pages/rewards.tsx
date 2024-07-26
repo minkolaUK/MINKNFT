@@ -12,19 +12,17 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Rewards() {
   const { contract } = useContract(REWARDSADDRESS, rewardsabi);
   const currentUserAddress = useAddress();
-
-  console.log("USER: ", currentUserAddress)
   const connectionStatus = useConnectionStatus();
   const [totalUserClaimed, setTotalUserClaimed] = useState<string | null>(null);
   const [unclaimedRewards, setUnclaimedRewards] = useState<string | null>(null);
-  
+
   const handleClaimRewards = async () => {
-    if (contract) {
+    if (contract && currentUserAddress) {
       try {
         const tx = await contract.call("ClaimAllRewards", [], { from: currentUserAddress });
         console.log("Claim transaction hash:", tx.hash);
-        
-        toast.success('🐸 CLAIM REWARD SUCCESSFUL!! \n Check Wallet for Rewards.', {
+
+        toast.success('CLAIM REWARD SUCCESSFUL! \n Check Wallet for Rewards.', {
           position: "bottom-center",
           autoClose: 5000,
           hideProgressBar: false,
@@ -34,11 +32,11 @@ export default function Rewards() {
           progress: undefined,
           theme: "light",
         });
-  
+
         // Optionally, you can add logic to listen for transaction confirmation
       } catch (error: unknown) {
         console.error("Error claiming rewards:", error);
-  
+
         let errorMessage = 'An unexpected error occurred';
         if (error instanceof Error) {
           const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
@@ -55,7 +53,7 @@ export default function Rewards() {
             errorMessage = error;
           }
         }
-  
+
         toast.error(`❌ CLAIM FAILED!! \n ${errorMessage}`, {
           position: "bottom-center",
           autoClose: 5000,
@@ -72,9 +70,8 @@ export default function Rewards() {
 
   useEffect(() => {
     const fetchContractData = async () => {
-      if (contract) {
+      if (contract && currentUserAddress) {
         try {
-
           // Fetch total user claimed (assuming current user's address is available)
           const userClaimed = await contract.call("UserTotalClaimed", [currentUserAddress]);
           const userClaimedInEth = ethers.utils.formatEther(userClaimed);
@@ -82,18 +79,18 @@ export default function Rewards() {
           setTotalUserClaimed(userClaimedInEth);
 
           // Fetch total unclaimed rewards for the user
-          const unclaimed = await contract.call("GetTotalUnclaimed",[], { from: currentUserAddress });
+          const unclaimed = await contract.call("GetTotalUnclaimed", [], { from: currentUserAddress });
           const unclaimedInEth = ethers.utils.formatEther(unclaimed);
           console.log("Unclaimed Rewards:", unclaimedInEth);
           setUnclaimedRewards(unclaimedInEth);
-          
         } catch (error) {
           console.error("Error fetching contract data:", error);
         }
       }
     };
+
     fetchContractData();
-  }, [contract]);
+  }, [contract, currentUserAddress]); // Add currentUserAddress to dependency array
 
   return (
     <>
@@ -115,18 +112,16 @@ export default function Rewards() {
         draggable
         pauseOnHover
         theme="light"
-        />
+      />
 
       <Container maxWidth="lg">
         <div className={styles.main}>
           {connectionStatus === "connected" ? (
             <>
-             
               <div className={styles.countdown}>
                 <h2>Your Total Claimed Rewards: {totalUserClaimed} $ETC</h2>
                 <h2>Your Total Unclaimed Rewards: {unclaimedRewards} $ETC</h2>
                 <button className={styles.btn} onClick={handleClaimRewards}>Claim Rewards</button>
-
               </div>
             </>
           ) : (

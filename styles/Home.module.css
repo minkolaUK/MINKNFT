@@ -526,7 +526,7 @@
   display: flex;
   align-items: center;
   gap: 3rem;
-  margin: 10px;
+  margin: auto;
 }
 
 .inputnumber {
@@ -552,7 +552,6 @@
 
 .totalpricecontainer p {
   color: var(--font-color);
-  margin-bottom: 20px;
 }
 
 .btn{
