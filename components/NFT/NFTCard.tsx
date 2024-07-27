@@ -15,8 +15,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import Image from 'next/image';
 
-
-
 interface NFTCardProps {
   tokenId: number;
 }
@@ -25,7 +23,7 @@ const NFTCard: FC<NFTCardProps> = ({ tokenId }) => {
   const { contract } = useContract(NFT_ADDRESS);
   const { data: nft } = useNFT(contract, tokenId);
   const { data: metadata, isLoading: loadingMetadata } = useContractMetadata(contract);
-  
+
   const showToastMessage = () => {
     toast.success('WITHDRAW SUCCESSFUL!!', {
       position: "bottom-right",
@@ -37,7 +35,8 @@ const NFTCard: FC<NFTCardProps> = ({ tokenId }) => {
       progress: undefined,
       theme: "light",
     });
-  }
+  };
+
   const showToastError = () => {
     toast.error('WITHDRAW FAILED!!', {
       position: "bottom-right",
@@ -49,19 +48,24 @@ const NFTCard: FC<NFTCardProps> = ({ tokenId }) => {
       progress: undefined,
       theme: "light",
     });
-  }
+  };
 
   return (
     <>
       {nft && (
         <div className={styles.nftBox}>
-          
-          {!loadingMetadata && nft.metadata &&
-              <div>
-                <img className={styles.nftMedia} src={nft.metadata.image as string} alt="minknft" />
-
-              </div>
-          }
+          {!loadingMetadata && nft.metadata && (
+            <div>
+              <Image
+                className={styles.nftMedia}
+                src={nft.metadata.image as string}
+                alt="minknft"
+                width={500} // specify appropriate width
+                height={500} // specify appropriate height
+                layout="responsive" // adjust as needed
+              />
+            </div>
+          )}
           <h3 className={styles.h3}>{nft.metadata.name}</h3>
           <Web3Button
             action={(contract) => contract?.call("withdraw", [[nft.metadata.id]])}
@@ -72,13 +76,15 @@ const NFTCard: FC<NFTCardProps> = ({ tokenId }) => {
           >
             Withdraw
           </Web3Button>
+          <ToastContainer />
         </div>
       )}
     </>
   );
 };
+
 export default NFTCard;
 
 function UseState(nft: import("@thirdweb-dev/react").NFT | undefined, arg1: boolean): { loadedNFTs: any; loadingnfts: any; } {
-throw new Error("Function not implemented.");
+  throw new Error("Function not implemented.");
 }

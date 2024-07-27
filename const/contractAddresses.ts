@@ -22,7 +22,7 @@ export const description = `"MINK NFT's" Are you  ready to join your digital rev
 export const welcome = "Welcome to the MINK NFT Collection";
 export const maxSupply = 50;
 export const mintPrice = 0.5;
-export const projectNfts = "NFTs";
+export const projectNfts = "Mink NFTs";
 export const maxPerWallet = 50;
 
 //4. Social Media

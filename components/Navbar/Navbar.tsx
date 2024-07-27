@@ -47,8 +47,9 @@ export function Navbar() {
         </div>
         <div className={styles.navMiddle}>
           <Link href="/" className={styles.linkheader}>MINT</Link>
-          <Link href="/staking" className={styles.linkheader}>STAKING</Link>
-          <a href="https://minkcoin.netlify.app/" target="_blank" rel="noopener noreferrer" className={styles.linkheader}>MINKCOIN</a>
+          <Link href="/staking" className={styles.linkheader}>STAKE</Link>
+          <Link href={`/profile/${address}`} className={styles.linkheader}>GALLERY</Link>
+          <a href="https://minkcoin.netlify.app" target="_blank" rel="noopener noreferrer" className={styles.linkheader}>MINKCOIN</a>
         </div>
         <div className={styles.navRight}>
           <div className={styles.navConnect}>
@@ -78,7 +79,10 @@ export function Navbar() {
           MINT
         </Link>
         <Link href="/staking" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
-          STAKING
+          STAKE
+        </Link>
+        <Link href={`/profile/${address}`} className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
+          GALLERY
         </Link>
         <Link href="https://minkcoin.netlify.app" target="_blank" rel="noopener noreferrer" className={styles.linkheader} onClick={updateMenu}>
           MINKCOIN
