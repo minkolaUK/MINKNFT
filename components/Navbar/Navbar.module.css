@@ -17,7 +17,7 @@
 
 .menu {
   width: 175px;
-  height: 200px;
+  height: 260px;
   display: flex;
   gap: 1rem;
   align-items: normal;
@@ -184,7 +184,7 @@ justify-self: center  ;
 
 .burger_bar {
   width: 2em;
-  height: .3em;
+  height: .2em;
   background-color: rgb(0, 0, 0);
   border-radius: 0.5em;
 }
