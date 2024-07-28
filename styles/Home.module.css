@@ -653,45 +653,41 @@
 
 .roadmapContainer {
   max-width: 700px;
-  margin: 10px auto; /* Center the container horizontally */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Center the content vertically */
+  margin: 20px auto; /* Center the container horizontally */
+  padding: 20px;
   text-align: center; /* Center the content horizontally */
-  margin-top: 20px; /* Adjust the top margin as needed */
   border: 5px solid var(--black-accent-color);
   border-radius: 25px;
-  overflow: hidden; /* Ensure the content is contained within the container */
   background-color: #7aa8d2;
+  overflow: hidden; /* Ensure content is contained within the container */
 }
 .roadmap {
-  width: 700px;
-  margin: 10px auto; /* Center the container horizontally */
+  width: 100%;
+  max-width: 700px; /* Ensure it doesn’t exceed the container width */
+  margin: 0 auto; /* Center horizontally */
   text-align: center; /* Center the content horizontally */
-  margin-top: 20px; /* Adjust the top margin as needed */
+  background-color: #54a047;
   border: 5px solid var(--black-accent-color);
   border-radius: 25px;
-  overflow: hidden; /* Ensure the content is contained within the container */
-  background-color: #54a047;
-  font-style: var(--font-third);
-  margin-bottom: 100px;
+  padding: 20px;
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
 .roadmap h1 {
-  font-size: 2em; /* Example font size for the heading */
-  margin-bottom: 20px; /* Adjust spacing below the heading */
+  font-size: 2em; /* Font size for the heading */
+  margin-bottom: 20px; /* Spacing below the heading */
 }
 
 .roadmap ul {
-  list-style: none; /* Remove default list styling */
-  padding: 0; /* Remove default list padding */
-  text-align: left; /* Left-align the list items */
+    list-style: none; /* Remove default list styling */
+    padding: 0; /* Remove default padding */
+    text-align: center; /* Center the list items */
+    margin: 0; /* Remove margin if any */
 }
 
 .roadmap li {
-  position: relative;
-  font-size: 1em; /* Use font third for the list items */
-  margin-bottom: 15px; /* Adjust spacing between list items */
+  font-size: 1.2em; /* Font size for list items */
+  margin-bottom: 15px; /* Spacing between list items */
 }
 
 .roadmap li::before {
