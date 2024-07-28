@@ -35,17 +35,13 @@ const Roadmap: NextPage = () => {
            <Image src="/images/roadmap.jpg" alt="roadmap" width={500} height={300} className={styles.roadmapImage} /></div>
 
            <div className={styles.roadmap}>
-            <h1>Roadmap</h1>
+            <h1>Mink Coin NFT Road Map</h1>
             <ul>
-              <li>Establish Mink social media presence to promote the upcoming minting.</li>
-              <li>Launch claim phase to allow users to secure their NFTs.</li>
-              <li>Commence minting phase following the completion of the claim phase.</li>
-              <li>Conduct community giveaways throughout the initial month of minting.</li>
-              <li>Initiate the burn phase on September 1th.</li>
-              <li>Launch staking opportunities starting September 1th.</li>
-              <li>Set the yield for Mink at 4.2069.</li>
-              <li>Introduce the live marketplace for buying and selling Mink NFTs.</li>  
-              <li>Explore collaborations with other projects.</li>
+              <li>Establish Mink Coin social media presence to promote the upcoming MINK NFT minting</li>
+              <li>Launch staking opportunities starting September 1th 2024</li>
+              <li>Set the yield for Mink at 4.2069</li>
+              <li>Introduce the live marketplace for buying and selling Mink NFTs</li>  
+              <li>Explore collaborations with other ETC projects</li>
            </ul>
            </div>
 

@@ -4,14 +4,14 @@ import React, { useState } from "react";
 import Skeleton from "../Skeleton/Skeleton";
 import NFT from "./MintedNFT";
 import styles from "../../styles/Buy.module.css";
-import metadata from "../../const/metadata.json"
+import metadata from "../../const/metadata.json";
 
 type Props = {
   isLoading: boolean;
   data: string[] | undefined;
   overrideOnclickBehavior?: (nft: NFTType) => void;
   emptyText?: string;
-  contract: string,
+  contract: string;
 };
 
 export default function MintedNFTGrid({
@@ -19,12 +19,8 @@ export default function MintedNFTGrid({
   data,
   overrideOnclickBehavior,
   emptyText = "No NFTs found for this collection.",
-  contract
+  contract,
 }: Props) {
-
-
-  const [sortOrder, setSortOrder] = useState<'ranking' | 'id'>('ranking');
-  
   // Check if data is not available
   if (isLoading || !data) {
     return (
@@ -37,34 +33,18 @@ export default function MintedNFTGrid({
       </div>
     );
   }
+
   const parsedData = data.map((nftString) => JSON.parse(nftString));
 
-  const sortedData = parsedData.sort((a, b) => {
-    if (sortOrder === 'ranking') {
-      return (
-        (parseInt(String(a.ranking), 10) || 0) -
-        (parseInt(String(b.ranking), 10) || 0)
-      );
-    } else if (sortOrder === 'id') {
-      return parseInt(a.id, 10) - parseInt(b.id, 10);
-    }
-    // Default case
-    return 0;
-  });
+  // Sort data by ID
+  const sortedData = parsedData.sort((a, b) => parseInt(a.id, 10) - parseInt(b.id, 10));
 
   return (
-
-<div>
-  <div className={styles.sortButtons}>
+    <div>
+      <div className={styles.sortButtons}>
         <button
-          className={sortOrder === 'ranking' ? styles.activeButton : ''}
-          onClick={() => setSortOrder('ranking')}
-        >
-          Sort by Ranking
-        </button>
-        <button
-          className={sortOrder === 'id' ? styles.activeButton : ''}
-          onClick={() => setSortOrder('id')}
+          className={styles.activeButton}
+          onClick={() => {}}
         >
           Sort by ID
         </button>
@@ -74,14 +54,13 @@ export default function MintedNFTGrid({
         {sortedData.map((nft) => (
           <Link
             href={`/token/${contract}/${nft}`}
-            key={nft}
+            key={nft.id}
             className={styles.nftContainer}
-          >test
+          >
             <NFT nft={nft} contract={contract} />
           </Link>
         ))}
       </div>
-  </div>
-
+    </div>
   );
 }
