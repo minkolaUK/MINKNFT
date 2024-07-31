@@ -41,7 +41,7 @@ const ConnectedContent: React.FC = () => (
         src="/images/roadmap.jpg"
         alt="Roadmap"
         width={350}
-        height={150}
+        height={250}
         className={styles.roadmapImage}
       />
     </div>
