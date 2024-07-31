@@ -14,8 +14,8 @@ const StakeCoin: React.FC = () => {
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, userAddress);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(minkStakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(minkStakingContract, "unstake");
+  const { mutateAsync: stake, isLoading: isStakeLoading } = useContractWrite(minkStakingContract, "stake");
+  const { mutateAsync: unstake, isLoading: isUnstakeLoading } = useContractWrite(minkStakingContract, "unstake");
 
   useEffect(() => {
     async function fetchUserAddress() {
@@ -47,9 +47,10 @@ const StakeCoin: React.FC = () => {
     if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) return toast.error("Please select a valid lock period");
 
     try {
-      await stake({
+      const stakeTx = await stake({
         args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
       });
+      await stakeTx.wait();  // Wait for the transaction to be mined
       toast.success("Staked successfully!");
     } catch (error) {
       console.error("Error staking tokens:", error);
@@ -61,9 +62,10 @@ const StakeCoin: React.FC = () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return toast.error("Please enter a valid amount");
 
     try {
-      await unstake({
+      const unstakeTx = await unstake({
         args: [ethers.utils.parseUnits(amount, 18)]
       });
+      await unstakeTx.wait();  // Wait for the transaction to be mined
       toast.success("Unstaked successfully!");
     } catch (error) {
       console.error("Error unstaking tokens:", error);
@@ -144,7 +146,7 @@ const styles = {
     maxWidth: "600px",
     margin: "0 auto",
     textAlign: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",  // Slightly lighter and transparent black
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
     color: "#fff",
     borderRadius: "10px",
     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.5)",
