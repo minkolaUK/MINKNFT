@@ -1,16 +1,36 @@
-import { useState, useEffect } from "react";
-import { useContract, useContractWrite, useTokenBalance } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
-import { stakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {
+  ConnectWallet,
+  ThirdwebNftMedia,
+  useAddress,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  useOwnedNFTs,
+  useTokenBalance,
+  Web3Button,
+} from "@thirdweb-dev/react";
+import { BigNumber, ethers } from "ethers";
+import type { NextPage } from "next";
+import { useEffect, useState } from "react";
+import {
+minkCoinstakingContractAddress,
+stakingContractAddress,
+tokenContractAddress,
+} from "../const/contractAddresses";
+import stylesHome from "../styles/Home.module.css";
+import {abi} from '../const/abi'
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
+
+
 
 const StakeCoin: React.FC = () => {
   const [userAddress, setUserAddress] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
 
-  const { contract: minkStakingContract } = useContract(stakingContractAddress);
+  const { contract: minkStakingContract } = useContract(minkCoinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, userAddress);
