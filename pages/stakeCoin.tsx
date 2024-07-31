@@ -47,7 +47,9 @@ const StakeCoin: React.FC = () => {
     if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) return toast.error("Please select a valid lock period");
 
     try {
-      await stake([ethers.utils.parseUnits(amount, 18), lockPeriod]);
+      await stake({
+        args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
+      });
       toast.success("Staked successfully!");
     } catch (error) {
       console.error("Error staking tokens:", error);
@@ -59,7 +61,9 @@ const StakeCoin: React.FC = () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return toast.error("Please enter a valid amount");
 
     try {
-      await unstake([ethers.utils.parseUnits(amount, 18)]);
+      await unstake({
+        args: [ethers.utils.parseUnits(amount, 18)]
+      });
       toast.success("Unstaked successfully!");
     } catch (error) {
       console.error("Error unstaking tokens:", error);
