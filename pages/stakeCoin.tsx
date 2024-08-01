@@ -4,6 +4,7 @@ import {
   useAddress,
   useContract,
   useContractRead,
+  useContractWrite,
   useOwnedNFTs,
   useTokenBalance,
   Web3Button,
@@ -31,8 +32,8 @@ const StakeCoin: React.FC = () => {
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, userAddress);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractRead(minkStakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractRead(minkStakingContract, "unstake");
+  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(minkStakingContract, "stake");
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(minkStakingContract, "unstake");
 
   useEffect(() => {
     async function fetchUserAddress() {
