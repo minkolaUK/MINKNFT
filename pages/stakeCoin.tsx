@@ -9,9 +9,8 @@ import { coinstakingContractAddress, tokenContractAddress } from "../const/contr
 
 // Define the staking options
 const stakingOptions = [
-  { period: 7, apy: 20, earlyUnstakeFee: 0.1, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 10, apy: 40, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 32, apy: 60, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 30, apy: 20, earlyUnstakeFee: 0.1, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 60, apy: 40, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
   { period: 90, apy: 100, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
 ];
 
@@ -61,7 +60,7 @@ const StakeCoin: NextPage = () => {
 
     try {
       await stake({
-        args: [ethers.utils.parseUnits(amount, 18), lockPeriod * 24 * 60 * 60]
+        args: [ethers.utils.parseUnits(amount, 18), lockPeriod * 30 * 60 * 90]
       });
       toast.success("Staked successfully!");
     } catch (error) {
@@ -90,10 +89,10 @@ const StakeCoin: NextPage = () => {
     <>
       <ToastContainer position="bottom-center" autoClose={5000} />
       <div className={styles.container}>
-        <h1 className={styles.header}>Stake Your Coin</h1>
+        <h1 className={styles.header}>Stake Your Mink Coin</h1>
         <div className={styles.balanceContainer}>
           <p className={styles.balance}>
-            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Coins`}
+            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink Coin`}
           </p>
         </div>
         <div className={styles.inputContainer}>
@@ -113,7 +112,7 @@ const StakeCoin: NextPage = () => {
           >
             <option value={0}>Select lock period</option>
             {stakingOptions.map((option) => (
-              <option key={option.period} value={option.period * 24 * 60 * 60}>
+              <option key={option.period} value={option.period * 30 * 60 * 90}>
                 {option.period} Days ({option.apy}%)
               </option>
             ))}
@@ -131,7 +130,7 @@ const StakeCoin: NextPage = () => {
               <h3>Lock period: {option.period} days</h3>
               <p>APY Rate: {option.apy}%</p>
               <p>Early unstake fee: {option.earlyUnstakeFee ? `${option.earlyUnstakeFee}%` : 'None'}</p>
-              <p>Minimum Staking Amount: {option.minAmount} BAT</p>
+              <p>Minimum Staking Amount: {option.minAmount} MINK</p>
               <p>Maximum Staking Amount: {option.maxAmount}</p>
               <p>Status: {option.status}</p>
             </div>
