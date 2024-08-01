@@ -10,7 +10,7 @@ import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { 
-  minkCoinstakingContractAddress, 
+  coinstakingContractAddress, 
   tokenContractAddress 
 } from "../const/contractAddresses";
 import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
@@ -19,7 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const StakeCoin: NextPage = () => {
   const address = useAddress();
-  const { contract: stakingContract } = useContract(minkCoinstakingContractAddress);
+  const { contract: stakingContract } = useContract(coinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
