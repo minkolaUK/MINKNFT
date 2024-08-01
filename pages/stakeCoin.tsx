@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
+import { minkCoinstakingContractAddress, coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
 
 const StakeCoin: NextPage = () => {
   const address = useAddress();
