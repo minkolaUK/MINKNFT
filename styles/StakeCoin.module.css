@@ -1,3 +1,5 @@
+/* StakeCoin.module.css */
+
 .container {
   padding: 20px;
   max-width: 600px;
@@ -68,6 +70,37 @@
   margin-bottom: 10px;
 }
 
+.button:hover {
+  background-color: #0056b3;
+}
+
 .marginLeft {
   margin-left: 10px;
+}
+
+.stakingOptionsContainer {
+  margin-top: 30px;
+}
+
+.stakingOption {
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly lighter black for distinction */
+  color: #fff;
+}
+
+.stakingOption h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+}
+
+.stakingOption p {
+  margin: 5px 0;
+  font-size: 1em;
+}
+
+.stakingOption p:first-child {
+  font-weight: bold;
 }
