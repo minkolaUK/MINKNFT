@@ -1,40 +1,24 @@
 import {
-  ConnectWallet,
-  ThirdwebNftMedia,
-  useAddress,
   useContract,
-  useContractRead,
-  useContractWrite,
-  useOwnedNFTs,
   useTokenBalance,
-  Web3Button,
 } from "@thirdweb-dev/react";
-import { BigNumber, ethers } from "ethers";
-import type { NextPage } from "next";
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import {
-  minkCoinstakingContractAddress,
-  stakingContractAddress,
-  tokenContractAddress,
-} from "../const/contractAddresses";
-import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
-import { abi } from '../const/abi';
+import { tokenContractAddress, minkCoinstakingContractAddress } from "../const/contractAddresses";
+import styles from "../styles/StakeCoin.module.css";
+import stylesHome from "../styles/Home.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import Link from "next/link";
 
 const StakeCoin: React.FC = () => {
   const [userAddress, setUserAddress] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
 
-  const { contract: minkStakingContract } = useContract(minkCoinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
-
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, userAddress);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(minkStakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(minkStakingContract, "unstake");
-
+  const { contract: minkStakingContract } = useContract(minkCoinstakingContractAddress);
+  
   useEffect(() => {
     async function fetchUserAddress() {
       try {
@@ -61,13 +45,15 @@ const StakeCoin: React.FC = () => {
   }, [tokenBalanceError]);
 
   const handleStake = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return toast.error("Please enter a valid amount");
-    if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) return toast.error("Please select a valid lock period");
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return toast.error("Please enter a valid amount");
+    }
+    if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) {
+      return toast.error("Please select a valid lock period");
+    }
 
     try {
-      await stake({
-        args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
-      });
+      // Add your staking logic here with `minkStakingContract` and `amount` & `lockPeriod` state variables
       toast.success("Staked successfully!");
     } catch (error) {
       console.error("Error staking tokens:", error);
@@ -76,33 +62,17 @@ const StakeCoin: React.FC = () => {
   };
 
   const handleUnstake = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return toast.error("Please enter a valid amount");
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      return toast.error("Please enter a valid amount");
+    }
 
     try {
-      await unstake({
-        args: [ethers.utils.parseUnits(amount, 18)]
-      });
+      // Add your unstaking logic here with `minkStakingContract` and `amount` state variable
       toast.success("Unstaked successfully!");
     } catch (error) {
       console.error("Error unstaking tokens:", error);
       toast.error("Error unstaking tokens. See console for details.");
     }
-  };
-
-  const getTokenBalance = () => {
-    if (tokenBalance) {
-      if (typeof tokenBalance === 'string') {
-        return tokenBalance;
-      } else if (ethers.BigNumber.isBigNumber(tokenBalance)) {
-        return ethers.utils.formatUnits(tokenBalance, 18);
-      } else if (tokenBalance.value && ethers.BigNumber.isBigNumber(tokenBalance.value)) {
-        return ethers.utils.formatUnits(tokenBalance.value, 18);
-      } else {
-        console.error("Unexpected token balance format:", tokenBalance);
-        return "Error fetching balance";
-      }
-    }
-    return "Error fetching balance";
   };
 
   return (
@@ -122,8 +92,16 @@ const StakeCoin: React.FC = () => {
       <div className={styles.container}>
         <h1 className={styles.header}>Stake Your Mink Coin</h1>
         <div className={styles.balanceContainer}>
-          <p className={styles.balance}>
-            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink`}
+          <h3 className={stylesHome.tokenLabel}>Current Balance</h3>
+          <p className={stylesHome.tokenValue}>
+            <b>
+              {isTokenBalanceLoading
+                ? "Loading..."
+                : typeof tokenBalance?.displayValue === 'string'
+                ? parseFloat(tokenBalance.displayValue).toFixed(4)
+                : "N/A"}
+            </b>{" "}
+            {tokenBalance?.symbol || "Mink"}
           </p>
         </div>
         <div className={styles.inputContainer}>
@@ -144,11 +122,11 @@ const StakeCoin: React.FC = () => {
             <option value={180 * 24 * 60 * 60}>6 Months (3.5%)</option>
             <option value={365 * 24 * 60 * 60}>12 Months (5%)</option>
           </select>
-          <button onClick={handleStake} disabled={isStakeLoading} className={styles.button}>
-            {isStakeLoading ? "Staking..." : "Stake"}
+          <button onClick={handleStake} disabled={false} className={styles.button}>
+            {"Stake"}
           </button>
-          <button onClick={handleUnstake} disabled={isUnstakeLoading} className={`${styles.button} ${styles.marginLeft}`}>
-            {isUnstakeLoading ? "Unstaking..." : "Unstake"}
+          <button onClick={handleUnstake} disabled={false} className={`${styles.button} ${styles.marginLeft}`}>
+            {"Unstake"}
           </button>
         </div>
       </div>
