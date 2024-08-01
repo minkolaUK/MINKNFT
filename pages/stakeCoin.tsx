@@ -2,16 +2,16 @@ import { ConnectWallet, useAddress, useContract, useContractWrite, useTokenBalan
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
+import styles from "../styles/StakeCoin.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
 
-// Define the staking options
+// Define the staking options with updated APY rates
 const stakingOptions = [
-  { period: 90 * 24 * 60 * 60, apy: 3, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 180 * 24 * 60 * 60, apy: 3.5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 365 * 24 * 60 * 60, apy: 5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 90 * 24 * 60 * 60, apy: 2, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 180 * 24 * 60 * 60, apy: 2.5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 365 * 24 * 60 * 60, apy: 3, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
 ];
 
 const StakeCoin: NextPage = () => {
@@ -20,7 +20,7 @@ const StakeCoin: NextPage = () => {
   const { contract: tokenContract } = useContract(tokenContractAddress);
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "withdraw"); // Assuming 'withdraw' is the correct function
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
@@ -50,6 +50,21 @@ const StakeCoin: NextPage = () => {
     }
   };
 
+  // Calculate estimated reward based on APY
+  const calculateReward = (amount: string, apy: number, days: number) => {
+    const daysInYear = 365;
+    const interestRate = (apy / 100) * (days / daysInYear);
+    return Number(amount) * interestRate;
+  };
+
+  // Get reward based on user input
+  const getEstimatedReward = () => {
+    const selectedOption = stakingOptions.find(option => option.period === lockPeriod);
+    if (!selectedOption) return "Select a valid lock period";
+    const apy = selectedOption.apy;
+    return calculateReward(amount, apy, lockPeriod / (24 * 60 * 60)).toFixed(4);
+  };
+
   const handleStake = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
       return toast.error("Please enter a valid amount");
@@ -62,7 +77,7 @@ const StakeCoin: NextPage = () => {
       await stake({
         args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
       });
-      toast.success("Staked successfully!");
+      toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
     } catch (error) {
       console.error("Error staking tokens:", error);
       toast.error("Error staking tokens. See console for details.");
@@ -123,6 +138,10 @@ const StakeCoin: NextPage = () => {
           <button onClick={handleUnstake} disabled={isUnstakeLoading} className={`${styles.button} ${styles.marginLeft}`}>
             {isUnstakeLoading ? "Unstaking..." : "Unstake"}
           </button>
+        </div>
+        <div className={styles.rewardCalculator}>
+          <h3>Estimated Reward</h3>
+          <p>Based on your input, the estimated reward is: {getEstimatedReward()} MINK</p>
         </div>
         <div className={styles.stakingOptionsContainer}>
           {stakingOptions.map((option) => (
