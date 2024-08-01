@@ -13,17 +13,15 @@ import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import {
-minkCoinstakingContractAddress,
-stakingContractAddress,
-tokenContractAddress,
+  minkCoinstakingContractAddress,
+  stakingContractAddress,
+  tokenContractAddress,
 } from "../const/contractAddresses";
-import stylesHome from "../styles/Home.module.css";
-import {abi} from '../const/abi'
+import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
+import { abi } from '../const/abi';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
-
-
 
 const StakeCoin: React.FC = () => {
   const [userAddress, setUserAddress] = useState<string>("");
@@ -121,35 +119,35 @@ const StakeCoin: React.FC = () => {
         pauseOnHover
         theme="light"
       />
-      <div style={styles.container}>
-        <h1 style={styles.header}>Stake Your Mink Coin</h1>
-        <div style={styles.balanceContainer}>
-          <p style={styles.balance}>
+      <div className={styles.container}>
+        <h1 className={styles.header}>Stake Your Mink Coin</h1>
+        <div className={styles.balanceContainer}>
+          <p className={styles.balance}>
             Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink`}
           </p>
         </div>
-        <div style={styles.inputContainer}>
+        <div className={styles.inputContainer}>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter amount"
-            style={styles.input}
+            className={styles.input}
           />
           <select
             value={lockPeriod}
             onChange={(e) => setLockPeriod(Number(e.target.value))}
-            style={styles.select}
+            className={styles.select}
           >
             <option value={0}>Select lock period</option>
             <option value={90 * 24 * 60 * 60}>3 Months (3%)</option>
             <option value={180 * 24 * 60 * 60}>6 Months (3.5%)</option>
             <option value={365 * 24 * 60 * 60}>12 Months (5%)</option>
           </select>
-          <button onClick={handleStake} disabled={isStakeLoading} style={styles.button}>
+          <button onClick={handleStake} disabled={isStakeLoading} className={styles.button}>
             {isStakeLoading ? "Staking..." : "Stake"}
           </button>
-          <button onClick={handleUnstake} disabled={isUnstakeLoading} style={{ ...styles.button, marginLeft: "10px" }}>
+          <button onClick={handleUnstake} disabled={isUnstakeLoading} className={`${styles.button} ${styles.marginLeft}`}>
             {isUnstakeLoading ? "Unstaking..." : "Unstake"}
           </button>
         </div>
@@ -157,70 +155,5 @@ const StakeCoin: React.FC = () => {
     </>
   );
 };
-
-const styles = {
-  container: {
-    padding: "20px",
-    maxWidth: "600px",
-    margin: "0 auto",
-    textAlign: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",  // Slightly lighter and transparent black
-    color: "#fff",
-    borderRadius: "10px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.5)",
-    marginTop: "120px",
-  },
-  header: {
-    fontSize: "2em",
-    marginBottom: "20px",
-    color: "#fff",
-  },
-  balanceContainer: {
-    marginBottom: "20px",
-  },
-  balance: {
-    fontSize: "1.2em",
-    color: "#fff",
-  },
-  inputContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    marginBottom: "20px",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "1em",
-    borderRadius: "5px",
-    border: "1px solid #555",
-    marginBottom: "10px",
-    color: "#000",
-    backgroundColor: "#fff",
-    width: "100%",
-    maxWidth: "300px",
-  },
-  select: {
-    padding: "10px",
-    fontSize: "1em",
-    borderRadius: "5px",
-    border: "1px solid #555",
-    marginBottom: "10px",
-    backgroundColor: "#fff",
-    color: "#000",
-    width: "100%",
-    maxWidth: "300px",
-  },
-  button: {
-    padding: "10px 20px",
-    fontSize: "1em",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    transition: "background-color 0.3s",
-    marginBottom: "10px",
-  },
-} as const;
 
 export default StakeCoin;
