@@ -16,6 +16,7 @@ export const stakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6
 export const tokenContractAddress = "0xcbb3DFb966C2A552E486276FA2813BA5618541D1";
 export const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const coinstakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
+export constminkCoinstakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
 
 
 //3. Descriptions
