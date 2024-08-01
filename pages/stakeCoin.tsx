@@ -1,11 +1,4 @@
-import {
-  ConnectWallet,
-  useAddress,
-  useContract,
-  useContractWrite,
-  useTokenBalance,
-  Web3Button,
-} from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress, useContract, useContractWrite, useTokenBalance, Web3Button } from "@thirdweb-dev/react";
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -18,7 +11,6 @@ const StakeCoin: NextPage = () => {
   const address = useAddress();
   const { contract: coinstakingContract } = useContract(coinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
-
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
@@ -82,23 +74,12 @@ const StakeCoin: NextPage = () => {
 
   return (
     <>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <ToastContainer position="bottom-center" autoClose={5000} />
       <div className={styles.container}>
-        <h1 className={styles.header}>Stake Your Mink Coin</h1>
+        <h1 className={styles.header}>Stake Your Coin</h1>
         <div className={styles.balanceContainer}>
           <p className={styles.balance}>
-            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink`}
+            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Coins`}
           </p>
         </div>
         <div className={styles.inputContainer}>
