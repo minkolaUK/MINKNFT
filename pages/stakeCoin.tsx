@@ -2,7 +2,6 @@ import {
   ConnectWallet,
   useAddress,
   useContract,
-  useContractRead,
   useContractWrite,
   useTokenBalance,
   Web3Button,
@@ -10,46 +9,25 @@ import {
 import { BigNumber, ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-import {
-  minkCoinstakingContractAddress,
-  tokenContractAddress,
+import { 
+  minkCoinstakingContractAddress, 
+  tokenContractAddress 
 } from "../const/contractAddresses";
 import styles from "../styles/StakeCoin.module.css"; // Import the CSS module
-import { abi } from '../const/abi';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
 const StakeCoin: NextPage = () => {
-  const [userAddress, setUserAddress] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [lockPeriod, setLockPeriod] = useState<number>(0);
-
-  const { contract: minkStakingContract } = useContract(minkCoinstakingContractAddress);
+  const address = useAddress();
+  const { contract: stakingContract } = useContract(minkCoinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
-  const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, userAddress);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(minkStakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(minkStakingContract, "unstake");
+  const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
+  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(stakingContract, "stake");
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(stakingContract, "unstake");
 
-  useEffect(() => {
-    async function fetchUserAddress() {
-      try {
-        if (window.ethereum) {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
-          const address = await signer.getAddress();
-          console.log("User Address:", address); // Debugging line
-          setUserAddress(address);
-        } else {
-          console.error("Ethereum provider not found");
-        }
-      } catch (error) {
-        console.error("Error fetching user address:", error);
-      }
-    }
-
-    fetchUserAddress();
-  }, []);
+  const [amount, setAmount] = useState<string>("");
+  const [lockPeriod, setLockPeriod] = useState<number>(0);
 
   useEffect(() => {
     if (tokenBalanceError) {
