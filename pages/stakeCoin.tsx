@@ -16,12 +16,12 @@ import { coinstakingContractAddress, tokenContractAddress } from "../const/contr
 
 const StakeCoin: NextPage = () => {
   const address = useAddress();
-  const { contract: stakingContract } = useContract(coinstakingContractAddress);
+  const { contract: coinstakingContract } = useContract(coinstakingContractAddress);
   const { contract: tokenContract } = useContract(tokenContractAddress);
 
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(stakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(stakingContract, "unstake");
+  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
