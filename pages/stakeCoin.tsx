@@ -9,9 +9,9 @@ import { coinstakingContractAddress, tokenContractAddress } from "../const/contr
 
 // Define the staking options
 const stakingOptions = [
-  { period: 30, apy: 20, earlyUnstakeFee: 0.1, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 60, apy: 40, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 90, apy: 100, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 90 * 24 * 60 * 60, apy: 3, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 180 * 24 * 60 * 60, apy: 3.5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 365 * 24 * 60 * 60, apy: 5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
 ];
 
 const StakeCoin: NextPage = () => {
@@ -54,13 +54,13 @@ const StakeCoin: NextPage = () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
       return toast.error("Please enter a valid amount");
     }
-    if (![7, 10, 32, 90].includes(lockPeriod)) {
+    if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) {
       return toast.error("Please select a valid lock period");
     }
 
     try {
       await stake({
-        args: [ethers.utils.parseUnits(amount, 18), lockPeriod * 30 * 60 * 90]
+        args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
       });
       toast.success("Staked successfully!");
     } catch (error) {
@@ -112,8 +112,8 @@ const StakeCoin: NextPage = () => {
           >
             <option value={0}>Select lock period</option>
             {stakingOptions.map((option) => (
-              <option key={option.period} value={option.period * 30 * 60 * 90}>
-                {option.period} Days ({option.apy}%)
+              <option key={option.period} value={option.period}>
+                {option.period / (24 * 60 * 60)} Days ({option.apy}%)
               </option>
             ))}
           </select>
@@ -127,7 +127,7 @@ const StakeCoin: NextPage = () => {
         <div className={styles.stakingOptionsContainer}>
           {stakingOptions.map((option) => (
             <div key={option.period} className={styles.stakingOption}>
-              <h3>Lock period: {option.period} days</h3>
+              <h3>Lock period: {option.period / (24 * 60 * 60)} days</h3>
               <p>APY Rate: {option.apy}%</p>
               <p>Early unstake fee: {option.earlyUnstakeFee ? `${option.earlyUnstakeFee}%` : 'None'}</p>
               <p>Minimum Staking Amount: {option.minAmount} MINK</p>
