@@ -20,7 +20,7 @@ const StakeCoin: NextPage = () => {
   const { contract: tokenContract } = useContract(tokenContractAddress);
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "withdraw"); // Assuming 'withdraw' is the correct function
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "withdraw");
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
@@ -50,14 +50,12 @@ const StakeCoin: NextPage = () => {
     }
   };
 
-  // Calculate estimated reward based on APY
   const calculateReward = (amount: string, apy: number, days: number) => {
     const daysInYear = 365;
     const interestRate = (apy / 100) * (days / daysInYear);
     return Number(amount) * interestRate;
   };
 
-  // Get reward based on user input
   const getEstimatedReward = () => {
     const selectedOption = stakingOptions.find(option => option.period === lockPeriod);
     if (!selectedOption) return "Select a valid lock period";
@@ -74,13 +72,33 @@ const StakeCoin: NextPage = () => {
     }
 
     try {
+      // Check for approval first
+      const isApproved = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
+      if (ethers.BigNumber.from(isApproved).lt(ethers.utils.parseUnits(amount, 18))) {
+        // Request approval if not sufficient
+        await tokenContract?.call("approve", [coinstakingContractAddress, ethers.utils.parseUnits(amount, 18)]);
+        toast.success("Approval successful. Proceeding to stake...");
+      }
+
+      // Proceed to stake
       await stake({
-        args: [ethers.utils.parseUnits(amount, 18), lockPeriod]
+        args: [ethers.utils.parseUnits(amount, 18), lockPeriod],
       });
       toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error staking tokens:", error);
-      toast.error("Error staking tokens. See console for details.");
+
+      let errorMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
+        if (reasonMatch) {
+          errorMessage = reasonMatch[1];
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      toast.error(`Error staking tokens: ${errorMessage}`);
     }
   };
 
@@ -91,12 +109,23 @@ const StakeCoin: NextPage = () => {
 
     try {
       await unstake({
-        args: [ethers.utils.parseUnits(amount, 18)]
+        args: [ethers.utils.parseUnits(amount, 18)],
       });
       toast.success("Unstaked successfully!");
     } catch (error) {
       console.error("Error unstaking tokens:", error);
-      toast.error("Error unstaking tokens. See console for details.");
+
+      let errorMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
+        if (reasonMatch) {
+          errorMessage = reasonMatch[1];
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      toast.error(`Error unstaking tokens: ${errorMessage}`);
     }
   };
 
