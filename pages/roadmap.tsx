@@ -49,6 +49,7 @@ const ConnectedContent: React.FC = () => (
       <h1>Mink Coin NFT Road Map</h1>
       <ul>
         <li>Establish Mink Coin social media presence to promote the upcoming MINK NFT Collection starting September 1st 2024</li>
+        <li>Launch staking opportunities for Mink Coin</li>
         <li>Launch minting and staking opportunities for Mink NFTs</li>
         <li>Anyone that stakes Mink NFTs will be rewarded in Mink Coin daily; each NFT will earn 4.2069 Mink Coin per day</li>
         <li>Explore collaborations with other ETC projects</li>
