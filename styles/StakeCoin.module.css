@@ -10,13 +10,26 @@
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
   margin-top: 120px;
+  overflow: auto; /* Allow for scrolling if content exceeds container height */
 }
 
-.header {
-  font-size: 2em;
-  margin-bottom: 20px;
+.stakedContainer {
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly lighter black */
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
   color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
+
+background-color: rgba(0, 0, 0, 0.7); /* Slightly lighter black */
+border-radius: 10px;
+padding: 20px;
+margin-bottom: 20px;
+color: #fff;
+box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+text-align: center;
 
 .balanceContainer {
   margin-bottom: 20px;
@@ -112,4 +125,30 @@
 
 .stakingOption p:first-child {
   font-weight: bold;
+}
+
+/* New section for transaction details */
+.transactionDetails {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.6); /* Slightly lighter black for distinction */
+  color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Add subtle shadow for better visibility */
+  text-align: left; /* Align text to the left for better readability */
+  max-width: 100%; /* Ensure it doesn't overflow */
+}
+
+.transactionDetails h3 {
+  margin-top: 0;
+}
+
+.transactionDetails a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.transactionDetails a:hover {
+  text-decoration: underline;
 }

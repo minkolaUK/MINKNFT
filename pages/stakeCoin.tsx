@@ -1,4 +1,4 @@
-import { ConnectWallet, useAddress, useContract, useContractWrite, useTokenBalance } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress, useContract, useContractWrite, useTokenBalance, useContractRead } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -22,14 +22,34 @@ const StakeCoin: NextPage = () => {
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "withdraw");
 
+  // New state and contract read for staked amount
+  const { data: stakedAmount, refetch: fetchStakedAmount, isLoading: isStakedAmountLoading, error: stakedAmountError } = useContractRead(coinstakingContract, "stakedAmount", [address]);
+
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
+  const [transactionDetails, setTransactionDetails] = useState<{
+    hash?: string;
+    amount?: string;
+    timestamp?: string;
+    blockNumber?: number;
+    status?: string;
+  }>({});
 
   useEffect(() => {
     if (tokenBalanceError) {
       toast.error("Error fetching token balance. Please try again later.");
     }
-  }, [tokenBalanceError]);
+    if (stakedAmountError) {
+      toast.error("Error fetching staked amount. Please try again later.");
+    }
+  }, [tokenBalanceError, stakedAmountError]);
+
+  useEffect(() => {
+    // Fetch staked amount when address changes
+    if (address) {
+      fetchStakedAmount();
+    }
+  }, [address, fetchStakedAmount]);
 
   const getTokenBalance = () => {
     if (!tokenBalance) return "No balance";
@@ -47,6 +67,16 @@ const StakeCoin: NextPage = () => {
     } catch (error) {
       console.error("Error processing token balance:", error);
       return "Error fetching balance";
+    }
+  };
+
+  const getStakedAmount = () => {
+    if (!stakedAmount) return "0 MINK";
+    try {
+      return parseFloat(ethers.utils.formatUnits(stakedAmount, 18)).toFixed(4) + " MINK";
+    } catch (error) {
+      console.error("Error processing staked amount:", error);
+      return "Error fetching staked amount";
     }
   };
 
@@ -72,19 +102,36 @@ const StakeCoin: NextPage = () => {
     }
 
     try {
+      const amountInUnits = ethers.utils.parseUnits(amount, 18);
+      
       // Check for approval first
       const isApproved = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
-      if (ethers.BigNumber.from(isApproved).lt(ethers.utils.parseUnits(amount, 18))) {
+      if (ethers.BigNumber.from(isApproved).lt(amountInUnits)) {
         // Request approval if not sufficient
-        await tokenContract?.call("approve", [coinstakingContractAddress, ethers.utils.parseUnits(amount, 18)]);
+        const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, amountInUnits]);
+        await approvalTx.wait();
         toast.success("Approval successful. Proceeding to stake...");
       }
 
       // Proceed to stake
-      await stake({
-        args: [ethers.utils.parseUnits(amount, 18), lockPeriod],
+      const stakeTx = await stake({
+        args: [amountInUnits, lockPeriod],
       });
+
+      // Wait for the transaction to be mined
+      const receipt = await stakeTx.wait();
+
+      // Set transaction details
+      setTransactionDetails({
+        hash: stakeTx.hash,
+        amount: amount,
+        timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+        blockNumber: receipt.blockNumber,
+        status: receipt.status === 1 ? "Success" : "Failed",
+      });
+
       toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
+      fetchStakedAmount(); // Update staked amount display
     } catch (error: unknown) {
       console.error("Error staking tokens:", error);
 
@@ -108,10 +155,29 @@ const StakeCoin: NextPage = () => {
     }
 
     try {
-      await unstake({
-        args: [ethers.utils.parseUnits(amount, 18)],
+      console.log("Attempting to unstake:", amount);
+      const amountInUnits = ethers.utils.parseUnits(amount, 18);
+
+      // Ensure the unstake function is called correctly
+      const unstakeTx = await unstake({
+        args: [amountInUnits],
       });
+
+      // Wait for the transaction to be mined
+      const receipt = await unstakeTx.wait();
+
+      // Set transaction details
+      setTransactionDetails({
+        hash: unstakeTx.hash,
+        amount: amount,
+        timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+        blockNumber: receipt.blockNumber,
+        status: receipt.status === 1 ? "Success" : "Failed",
+      });
+
       toast.success("Unstaked successfully!");
+      console.log("Unstake successful for amount:", amount);
+      fetchStakedAmount(); // Update staked amount display
     } catch (error) {
       console.error("Error unstaking tokens:", error);
 
@@ -134,11 +200,20 @@ const StakeCoin: NextPage = () => {
       <ToastContainer position="bottom-center" autoClose={5000} />
       <div className={styles.container}>
         <h1 className={styles.header}>Stake Your Mink Coin</h1>
+        
+        {/* Display Balance at the Top */}
         <div className={styles.balanceContainer}>
           <p className={styles.balance}>
             Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink Coin`}
           </p>
         </div>
+
+        {/* Display Staked Amount */}
+        <div className={styles.stakedContainer}>
+          <h3>Staked Amount</h3>
+          <p>{isStakedAmountLoading ? "Loading..." : getStakedAmount()}</p>
+        </div>
+        
         <div className={styles.inputContainer}>
           <input
             type="number"
@@ -168,10 +243,14 @@ const StakeCoin: NextPage = () => {
             {isUnstakeLoading ? "Unstaking..." : "Unstake"}
           </button>
         </div>
+
+        {/* Reward Calculator */}
         <div className={styles.rewardCalculator}>
           <h3>Estimated Reward</h3>
           <p>Based on your input, the estimated reward is: {getEstimatedReward()} MINK</p>
         </div>
+
+        {/* Staking Options */}
         <div className={styles.stakingOptionsContainer}>
           {stakingOptions.map((option) => (
             <div key={option.period} className={styles.stakingOption}>
@@ -184,6 +263,18 @@ const StakeCoin: NextPage = () => {
             </div>
           ))}
         </div>
+
+        {/* Display Transaction Details */}
+        {transactionDetails.hash && (
+          <div className={styles.transactionDetails}>
+            <h3>Transaction Details</h3>
+            <p><strong>Transaction Hash:</strong> <a href={`https://testnet.etherscan.io/tx/${transactionDetails.hash}`} target="_blank" rel="noopener noreferrer">{transactionDetails.hash}</a></p>
+            <p><strong>Amount Staked:</strong> {transactionDetails.amount} MINK</p>
+            <p><strong>Timestamp:</strong> {transactionDetails.timestamp}</p>
+            <p><strong>Block Number:</strong> {transactionDetails.blockNumber}</p>
+            <p><strong>Status:</strong> {transactionDetails.status}</p>
+          </div>
+        )}
       </div>
     </>
   );
