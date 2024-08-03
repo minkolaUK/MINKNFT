@@ -117,23 +117,24 @@ const StakeCoin = () => {
       }
 
       // Proceed to stake
-      const stakeTx = await stake({
-        args: [amountInUnits, lockPeriod],
-      });
+      const tx = await stake({ args: [amountInUnits, lockPeriod] });
 
       // Wait for the transaction to be mined
-      const receipt = await stakeTx.wait();
+      if (tx && tx.wait) {
+        const receipt = await tx.wait();
+        // Set transaction details
+        setTransactionDetails({
+          hash: tx.hash,
+          amount: amount,
+          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+          blockNumber: receipt.blockNumber,
+          status: receipt.status === 1 ? "Success" : "Failed",
+        });
 
-      // Set transaction details
-      setTransactionDetails({
-        hash: stakeTx.hash,
-        amount: amount,
-        timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
-        blockNumber: receipt.blockNumber,
-        status: receipt.status === 1 ? "Success" : "Failed",
-      });
-
-      toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
+        toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
+      } else {
+        toast.error("Transaction not confirmed.");
+      }
     } catch (error: unknown) {
       console.error("Error staking tokens:", error);
 
@@ -160,23 +161,24 @@ const StakeCoin = () => {
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
 
       // Ensure the unstake function is called correctly
-      const unstakeTx = await unstake({
-        args: [amountInUnits],
-      });
+      const tx = await unstake({ args: [amountInUnits] });
 
       // Wait for the transaction to be mined
-      const receipt = await unstakeTx.wait();
+      if (tx && tx.wait) {
+        const receipt = await tx.wait();
+        // Set transaction details
+        setTransactionDetails({
+          hash: tx.hash,
+          amount: amount,
+          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+          blockNumber: receipt.blockNumber,
+          status: receipt.status === 1 ? "Success" : "Failed",
+        });
 
-      // Set transaction details
-      setTransactionDetails({
-        hash: unstakeTx.hash,
-        amount: amount,
-        timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
-        blockNumber: receipt.blockNumber,
-        status: receipt.status === 1 ? "Success" : "Failed",
-      });
-
-      toast.success("Unstaked successfully!");
+        toast.success("Unstaked successfully!");
+      } else {
+        toast.error("Transaction not confirmed.");
+      }
     } catch (error) {
       console.error("Error unstaking tokens:", error);
 

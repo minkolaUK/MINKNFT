@@ -547,4 +547,4 @@ export const minkrewardsabi = [
     "outputs": [],
     "stateMutability": "nonpayable"
   }
-]
+];
