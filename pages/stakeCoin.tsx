@@ -19,8 +19,6 @@ const StakeCoin = () => {
   const { contract: coinstakingContract } = useContract(coinstakingContractAddress, minkrewardsabi);
   const { contract: tokenContract } = useContract(tokenContractAddress);
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
-
-  // Replace the previous useContractRead call with the getUserStakes function call
   const { data: userStakes, isLoading: isUserStakesLoading, error: userStakesError } = useContractRead(
     coinstakingContract,
     "getUserStakes",
@@ -96,6 +94,37 @@ const StakeCoin = () => {
     return calculateReward(amount, apy, lockPeriod / (24 * 60 * 60)).toFixed(4);
   };
 
+  const handleTransaction = async (transactionFn: () => Promise<any>, successMessage: string) => {
+    try {
+      const tx = await transactionFn();
+      if (tx && tx.wait) {
+        const receipt = await tx.wait();
+        setTransactionDetails({
+          hash: tx.hash,
+          amount: amount,
+          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+          blockNumber: receipt.blockNumber,
+          status: receipt.status === 1 ? "Success" : "Failed",
+        });
+        toast.success(successMessage);
+      } else {
+        toast.error("Transaction not confirmed.");
+      }
+    } catch (error) {
+      console.error("Error processing transaction:", error);
+      let errorMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
+        if (reasonMatch) {
+          errorMessage = reasonMatch[1];
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      toast.error(`Error processing transaction: ${errorMessage}`);
+    }
+  };
+
   const handleStake = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
       return toast.error("Please enter a valid amount");
@@ -106,49 +135,20 @@ const StakeCoin = () => {
 
     try {
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
-
-      // Check for approval first
       const allowance = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
+
       if (ethers.BigNumber.from(allowance).lt(amountInUnits)) {
-        // Request approval if not sufficient
         const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, ethers.constants.MaxUint256]);
         await approvalTx.wait();
         toast.success("Approval successful. Proceeding to stake...");
       }
 
-      // Proceed to stake
-      const tx = await stake({ args: [amountInUnits, lockPeriod] });
-
-      // Wait for the transaction to be mined
-      if (tx && tx.wait) {
-        const receipt = await tx.wait();
-        // Set transaction details
-        setTransactionDetails({
-          hash: tx.hash,
-          amount: amount,
-          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
-          blockNumber: receipt.blockNumber,
-          status: receipt.status === 1 ? "Success" : "Failed",
-        });
-
-        toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
-      } else {
-        toast.error("Transaction not confirmed.");
-      }
-    } catch (error: unknown) {
-      console.error("Error staking tokens:", error);
-
-      let errorMessage = "An unexpected error occurred";
-      if (error instanceof Error) {
-        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
-        if (reasonMatch) {
-          errorMessage = reasonMatch[1];
-        } else {
-          errorMessage = error.message;
-        }
-      }
-
-      toast.error(`Error staking tokens: ${errorMessage}`);
+      await handleTransaction(
+        () => stake({ args: [amountInUnits, lockPeriod] }),
+        `Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`
+      );
+    } catch (error) {
+      toast.error(`Error staking tokens: ${error.message}`);
     }
   };
 
@@ -159,40 +159,12 @@ const StakeCoin = () => {
 
     try {
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
-
-      // Ensure the unstake function is called correctly
-      const tx = await unstake({ args: [amountInUnits] });
-
-      // Wait for the transaction to be mined
-      if (tx && tx.wait) {
-        const receipt = await tx.wait();
-        // Set transaction details
-        setTransactionDetails({
-          hash: tx.hash,
-          amount: amount,
-          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
-          blockNumber: receipt.blockNumber,
-          status: receipt.status === 1 ? "Success" : "Failed",
-        });
-
-        toast.success("Unstaked successfully!");
-      } else {
-        toast.error("Transaction not confirmed.");
-      }
+      await handleTransaction(
+        () => unstake({ args: [amountInUnits] }),
+        "Unstaked successfully!"
+      );
     } catch (error) {
-      console.error("Error unstaking tokens:", error);
-
-      let errorMessage = "An unexpected error occurred";
-      if (error instanceof Error) {
-        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
-        if (reasonMatch) {
-          errorMessage = reasonMatch[1];
-        } else {
-          errorMessage = error.message;
-        }
-      }
-
-      toast.error(`Error unstaking tokens: ${errorMessage}`);
+      toast.error(`Error unstaking tokens: ${error.message}`);
     }
   };
 
@@ -201,7 +173,7 @@ const StakeCoin = () => {
       <ToastContainer position="bottom-center" autoClose={5000} />
       <div className={styles.container}>
         <h1 className={styles.header}>Stake Your Mink Coin</h1>
-        
+
         {/* Display Balance at the Top */}
         <div className={styles.balanceContainer}>
           <p className={styles.balance}>
