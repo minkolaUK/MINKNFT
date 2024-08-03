@@ -5,7 +5,7 @@ import styles from "../styles/StakeCoin.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
-import { minkRewardsABI } from "../const/minkrewardsabi";
+import { abi as minkRewardsABI } from "../const/minkrewardsabi";
 
 // Define the staking options
 const stakingOptions = [
@@ -209,7 +209,7 @@ const StakeCoin = () => {
 
         {/* Display Staked Amount */}
         <div className={styles.stakedContainer}>
-          <h3>Staked Amount</h3>
+          <h3>Your Staked Amount</h3>
           <p className={styles.stakedAmount}>{isUserStakesLoading ? "Loading..." : getTotalStakedAmount()}</p>
         </div>
 
