@@ -82,7 +82,7 @@ export default function ProfilePage() {
               overrideOnclickBehavior={(nft) => {
                 setSelectedNft(nft);
               }}
-              emptyText={`Looks like you don't own any Mink NFTs in the collection. Head to the mint page to buy some!`}
+              emptyText={`Looks like you don't own any Mink NFTs in the collection. Head to the stake nft page to buy some!`}
             />
           ) : null}
         </div>

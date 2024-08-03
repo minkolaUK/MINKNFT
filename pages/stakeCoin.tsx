@@ -1,29 +1,35 @@
-import { ConnectWallet, useAddress, useContract, useContractWrite, useTokenBalance, useContractRead } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
-import type { NextPage } from "next";
+import { useAddress, useContract, useContractRead, useContractWrite, useTokenBalance } from "@thirdweb-dev/react";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import styles from "../styles/StakeCoin.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
+import { abi as minkRewardsABI } from "../const/minkrewardsabi";
 
-// Define the staking options with updated APY rates
+// Define the staking options
 const stakingOptions = [
   { period: 90 * 24 * 60 * 60, apy: 2, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
   { period: 180 * 24 * 60 * 60, apy: 2.5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
   { period: 365 * 24 * 60 * 60, apy: 3, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
 ];
 
-const StakeCoin: NextPage = () => {
+const StakeCoin = () => {
   const address = useAddress();
-  const { contract: coinstakingContract } = useContract(coinstakingContractAddress);
+  const { contract: coinstakingContract } = useContract(coinstakingContractAddress, minkRewardsABI);
   const { contract: tokenContract } = useContract(tokenContractAddress);
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
-  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "withdraw");
 
-  // New state and contract read for staked amount
-  const { data: stakedAmount, refetch: fetchStakedAmount, isLoading: isStakedAmountLoading, error: stakedAmountError } = useContractRead(coinstakingContract, "stakedAmount", [address]);
+  // Replace the previous useContractRead call with the getUserStakes function call
+  const { data: userStakes, isLoading: isUserStakesLoading, error: userStakesError } = useContractRead(
+    coinstakingContract,
+    "getUserStakes",
+    [address]
+  );
+
+  // Define contract methods
+  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
+  const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
@@ -39,17 +45,10 @@ const StakeCoin: NextPage = () => {
     if (tokenBalanceError) {
       toast.error("Error fetching token balance. Please try again later.");
     }
-    if (stakedAmountError) {
+    if (userStakesError) {
       toast.error("Error fetching staked amount. Please try again later.");
     }
-  }, [tokenBalanceError, stakedAmountError]);
-
-  useEffect(() => {
-    // Fetch staked amount when address changes
-    if (address) {
-      fetchStakedAmount();
-    }
-  }, [address, fetchStakedAmount]);
+  }, [tokenBalanceError, userStakesError]);
 
   const getTokenBalance = () => {
     if (!tokenBalance) return "No balance";
@@ -70,12 +69,16 @@ const StakeCoin: NextPage = () => {
     }
   };
 
-  const getStakedAmount = () => {
-    if (!stakedAmount) return "0 MINK";
+  const getTotalStakedAmount = () => {
+    if (!userStakes || userStakes.length === 0) return "0 MINK";
     try {
-      return parseFloat(ethers.utils.formatUnits(stakedAmount, 18)).toFixed(4) + " MINK";
+      let totalStaked = BigNumber.from(0);
+      userStakes.forEach((stake: any) => {
+        totalStaked = totalStaked.add(stake.amount);
+      });
+      return parseFloat(ethers.utils.formatUnits(totalStaked, 18)).toFixed(4) + " MINK";
     } catch (error) {
-      console.error("Error processing staked amount:", error);
+      console.error("Error calculating total staked amount:", error);
       return "Error fetching staked amount";
     }
   };
@@ -103,12 +106,12 @@ const StakeCoin: NextPage = () => {
 
     try {
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
-      
+
       // Check for approval first
-      const isApproved = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
-      if (ethers.BigNumber.from(isApproved).lt(amountInUnits)) {
+      const allowance = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
+      if (ethers.BigNumber.from(allowance).lt(amountInUnits)) {
         // Request approval if not sufficient
-        const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, amountInUnits]);
+        const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, ethers.constants.MaxUint256]);
         await approvalTx.wait();
         toast.success("Approval successful. Proceeding to stake...");
       }
@@ -131,7 +134,6 @@ const StakeCoin: NextPage = () => {
       });
 
       toast.success(`Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`);
-      fetchStakedAmount(); // Update staked amount display
     } catch (error: unknown) {
       console.error("Error staking tokens:", error);
 
@@ -155,7 +157,6 @@ const StakeCoin: NextPage = () => {
     }
 
     try {
-      console.log("Attempting to unstake:", amount);
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
 
       // Ensure the unstake function is called correctly
@@ -176,8 +177,6 @@ const StakeCoin: NextPage = () => {
       });
 
       toast.success("Unstaked successfully!");
-      console.log("Unstake successful for amount:", amount);
-      fetchStakedAmount(); // Update staked amount display
     } catch (error) {
       console.error("Error unstaking tokens:", error);
 
@@ -211,24 +210,19 @@ const StakeCoin: NextPage = () => {
         {/* Display Staked Amount */}
         <div className={styles.stakedContainer}>
           <h3>Staked Amount</h3>
-          <p>{isStakedAmountLoading ? "Loading..." : getStakedAmount()}</p>
+          <p className={styles.stakedAmount}>{isUserStakesLoading ? "Loading..." : getTotalStakedAmount()}</p>
         </div>
-        
+
+        {/* Stake Input */}
         <div className={styles.inputContainer}>
           <input
-            type="number"
+            type="text"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
+            placeholder="Enter amount to stake"
             className={styles.input}
-            min="0"
-            step="0.01"
           />
-          <select
-            value={lockPeriod}
-            onChange={(e) => setLockPeriod(Number(e.target.value))}
-            className={styles.select}
-          >
+          <select value={lockPeriod} onChange={(e) => setLockPeriod(Number(e.target.value))} className={styles.select}>
             <option value={0}>Select lock period</option>
             {stakingOptions.map((option) => (
               <option key={option.period} value={option.period}>
@@ -268,7 +262,7 @@ const StakeCoin: NextPage = () => {
         {transactionDetails.hash && (
           <div className={styles.transactionDetails}>
             <h3>Transaction Details</h3>
-            <p><strong>Transaction Hash:</strong> <a href={`https://testnet.etherscan.io/tx/${transactionDetails.hash}`} target="_blank" rel="noopener noreferrer">{transactionDetails.hash}</a></p>
+            <p><strong>Transaction Hash:</strong> <a href={`https://etc-mordor.blockscout.com/tx/${transactionDetails.hash}`} target="_blank" rel="noopener noreferrer">{transactionDetails.hash}</a></p>
             <p><strong>Amount Staked:</strong> {transactionDetails.amount} MINK</p>
             <p><strong>Timestamp:</strong> {transactionDetails.timestamp}</p>
             <p><strong>Block Number:</strong> {transactionDetails.blockNumber}</p>
