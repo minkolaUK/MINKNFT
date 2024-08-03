@@ -5,7 +5,7 @@ import styles from "../styles/StakeCoin.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
-import { abi as minkRewardsABI } from "../const/minkrewardsabi";
+import { minkRewardsABI } from "../const/minkrewardsabi";
 
 // Define the staking options
 const stakingOptions = [
