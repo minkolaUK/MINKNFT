@@ -1,15 +1,18 @@
-/* StakeCoin.module.css */
-
+/* Container for staking transactions */
 .stakedContainer {
   background-color: rgba(0, 0, 0, 0.7); /* Slightly lighter black */
   border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 5px;
+  padding: 20px; /* Increased padding for better spacing */
+  margin-bottom: 20px; /* Increased margin for spacing between items */
   color: #fff;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
   text-align: center;
+  max-width: 100%; /* Ensure it doesn't stretch beyond container */
+  width: 100%; /* Full width within parent container */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
+/* Main container for the page */
 .container {
   padding: 20px;
   max-width: 600px;
@@ -22,12 +25,14 @@
   margin-top: 120px;
 }
 
+/* Header styling */
 .header {
   font-size: 2em;
   margin-bottom: 20px;
   color: #fff;
 }
 
+/* Box containing information */
 .infoBox {
   border: 1px solid #555;
   border-radius: 8px;
@@ -38,16 +43,19 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Header inside infoBox */
 .infoBox h3 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
 }
 
+/* Paragraphs inside infoBox */
 .infoBox p {
   margin: 5px 0;
   font-size: 1em;
 }
 
+/* Container for input elements */
 .inputContainer {
   display: flex;
   flex-direction: column;
@@ -55,30 +63,22 @@
   margin-bottom: 20px;
 }
 
-.input {
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 5px;
-  border: 1px solid #555;
-  margin-bottom: 10px;
-  color: #000;
-  background-color: #fff;
-  width: 100%;
-  max-width: 300px;
-}
-
+/* Styling for input fields */
+.input,
 .select {
   padding: 10px;
   font-size: 1em;
   border-radius: 5px;
   border: 1px solid #555;
   margin-bottom: 10px;
-  background-color: #fff;
   color: #000;
+  background-color: #fff;
   width: 100%;
   max-width: 300px;
+  box-sizing: border-box;
 }
 
+/* Styling for buttons */
 .button {
   padding: 10px 20px;
   font-size: 1em;
@@ -95,14 +95,17 @@
   background-color: #0056b3;
 }
 
+/* Styling for margins */
 .marginLeft {
   margin-left: 10px;
 }
 
+/* Container for staking options */
 .stakingOptionsContainer {
   margin-top: 30px;
 }
 
+/* Styling for individual staking options */
 .stakingOption {
   border: 1px solid #555;
   border-radius: 8px;
@@ -112,8 +115,12 @@
   color: #fff;
   transition: transform 0.3s ease; /* Smooth transition for scaling */
   cursor: pointer; /* Indicate that the element is interactive */
+  max-width: 100%; /* Ensure it fits within its container */
+  width: 100%; /* Full width within the parent container */
+  box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
+/* Hover effect for staking options */
 .stakingOption:hover,
 .stakingOption:focus {
   transform: scale(1.05); /* Slightly increase the size */
@@ -121,11 +128,13 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a shadow */
 }
 
+/* Header inside staking options */
 .stakingOption h3 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
 }
 
+/* Paragraphs inside staking options */
 .stakingOption p {
   margin: 5px 0;
   font-size: 1em;
@@ -133,4 +142,26 @@
 
 .stakingOption p:first-child {
   font-weight: bold;
+}
+
+/* Styling for view transactions link */
+.viewTransactionsLink {
+  display: inline-block;
+  margin-top: 20px;
+  color: #0070f3; /* Bright blue color for visibility */
+  text-decoration: underline;
+  font-size: 1.2em; /* Slightly larger font size for better visibility */
+  padding: 10px 20px; /* Padding for button-like appearance */
+  border-radius: 5px; /* Rounded corners for consistency */
+  border: 2px solid #0070f3; /* Border to match link color */
+  background-color: rgba(0, 0, 0, 0.8); /* Dark background to contrast with text color */
+  cursor: pointer; /* Indicate that it's clickable */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5); /* Add a subtle shadow for depth */
+}
+
+/* Hover effect for view transactions link */
+.viewTransactionsLink:hover {
+  background-color: #0070f3; /* Bright blue background on hover */
+  color: #fff; /* White text on hover */
 }
