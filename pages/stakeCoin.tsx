@@ -5,7 +5,7 @@ import styles from "../styles/StakeCoin.module.css";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
-import { minkrewardsabi } from "../const/minkrewardsabi";
+import { abi } from '../const/minkrewardsabi'
 
 // Define the staking options
 const stakingOptions = [
@@ -16,7 +16,7 @@ const stakingOptions = [
 
 const StakeCoin = () => {
   const address = useAddress();
-  const { contract: coinstakingContract } = useContract(coinstakingContractAddress, minkrewardsabi);
+  const { contract: coinstakingContract, isLoading: isContractLoading } = useContract(coinstakingContractAddress, abi);
   const { contract: tokenContract } = useContract(tokenContractAddress);
   const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
   const { data: userStakes, isLoading: isUserStakesLoading, error: userStakesError } = useContractRead(
@@ -51,16 +51,16 @@ const StakeCoin = () => {
   }, [tokenBalanceError, userStakesError]);
 
   useEffect(() => {
-    const fetchPendingRewards = async () => {
-      try {
-        const data = await coinstakingContract.call("pendingRewards", [address]);
-        setPendingRewards(ethers.utils.formatUnits(data, 18));
-      } catch (error) {
-        console.error("Error fetching pending rewards:", error);
-      }
-    };
+    if (address && coinstakingContract) {
+      const fetchPendingRewards = async () => {
+        try {
+          const data = await coinstakingContract.call("pendingRewards", [address]);
+          setPendingRewards(ethers.utils.formatUnits(data, 18));
+        } catch (error) {
+          console.error("Error fetching pending rewards:", error);
+        }
+      };
 
-    if (address) {
       fetchPendingRewards();
     }
   }, [address, coinstakingContract]);
@@ -210,7 +210,7 @@ const StakeCoin = () => {
           <option value={180 * 24 * 60 * 60}>180 days</option>
           <option value={365 * 24 * 60 * 60}>365 days</option>
         </select>
-        <button className={styles.button} onClick={handleStake} disabled={isStakeLoading}>Stake</button>
+        <button className={styles.button} onClick={handleStake} disabled={isStakeLoading || !coinstakingContract}>Stake</button>
         <button
           className={styles.button}
           onClick={() => {
@@ -223,7 +223,7 @@ const StakeCoin = () => {
               }
             }
           }}
-          disabled={isUnstakeLoading}
+          disabled={isUnstakeLoading || !coinstakingContract}
         >
           Unstake
         </button>

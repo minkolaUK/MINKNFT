@@ -1,4 +1,4 @@
-export const minkrewardsabi = [
+export const abi = [
   {
     "type": "constructor",
     "name": "",
