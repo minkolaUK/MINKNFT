@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../styles/StakeForm.module.css';
+import styles from "../../styles/StakeCoin.module.css";
 
 interface StakeFormProps {
   amount: string;
@@ -10,8 +10,8 @@ interface StakeFormProps {
   handleUnstake: (stakeIndex: number) => Promise<void>;
   isStakeLoading: boolean;
   isUnstakeLoading: boolean;
-  estimatedReward: string;  // Ensure this is included
-  coinstakingContract: any; // Adjust the type as needed
+  estimatedReward: string;
+  coinstakingContract: any;
 }
 
 const StakeForm: React.FC<StakeFormProps> = ({
@@ -28,7 +28,7 @@ const StakeForm: React.FC<StakeFormProps> = ({
 }) => {
   return (
     <div className={styles.formContainer}>
-      <h2>Stake Form</h2>
+      <h2>Please enter amount to stake and lock peroid</h2>
       <input
         type="number"
         value={amount}
