@@ -97,18 +97,18 @@ const StakeCoin = () => {
   const handleTransaction = async (transactionFn: () => Promise<any>, successMessage: string) => {
     try {
       const tx = await transactionFn();
-      if (tx && tx.wait) {
+      if (tx && tx.hash) {
         const receipt = await tx.wait();
         setTransactionDetails({
           hash: tx.hash,
           amount: amount,
-          timestamp: new Date(receipt.timestamp * 1000).toLocaleString(),
+          timestamp: new Date().toLocaleString(),
           blockNumber: receipt.blockNumber,
           status: receipt.status === 1 ? "Success" : "Failed",
         });
         toast.success(successMessage);
       } else {
-        toast.error("Transaction not confirmed.");
+        toast.error("Please Confirm Transaction");
       }
     } catch (error) {
       console.error("Error processing transaction:", error);
@@ -139,12 +139,12 @@ const StakeCoin = () => {
 
       if (ethers.BigNumber.from(allowance).lt(amountInUnits)) {
         const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, ethers.constants.MaxUint256]);
-        await approvalTx.wait();
+        await approvalTx.wait(); // Ensure this is correct based on the library
         toast.success("Approval successful. Proceeding to stake...");
       }
 
       await handleTransaction(
-        () => stake({ args: [amountInUnits, lockPeriod] }),
+        async () => stake({ args: [amountInUnits, lockPeriod] }),
         `Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`
       );
     } catch (error) {
@@ -160,7 +160,7 @@ const StakeCoin = () => {
     try {
       const amountInUnits = ethers.utils.parseUnits(amount, 18);
       await handleTransaction(
-        () => unstake({ args: [amountInUnits] }),
+        async () => unstake({ args: [amountInUnits] }),
         "Unstaked successfully!"
       );
     } catch (error) {
