@@ -7,7 +7,7 @@ interface BalanceInfoProps {
 }
 
 const BalanceInfo: React.FC<BalanceInfoProps> = ({ tokenBalance, userStakes }) => {
-  const formatBalance = (balance: string | ethers.BigNumber) => {
+  const formatBalance = (balance: string | ethers.BigNumber): string => {
     if (typeof balance === 'string') {
       return parseFloat(balance).toFixed(4);
     } else if (ethers.BigNumber.isBigNumber(balance)) {
@@ -33,7 +33,7 @@ const BalanceInfo: React.FC<BalanceInfoProps> = ({ tokenBalance, userStakes }) =
   return (
     <div className={styles.stakedContainer}>
       <h2>Your Balance</h2>
-      <p>{formatBalance(tokenBalance)} MINK</p>
+      <p>{tokenBalance ? formatBalance(tokenBalance) + " MINK" : "Balance not available"}</p>
       <h2>Total Staked Amount</h2>
       <p>{getTotalStakedAmount()}</p>
       <h2>Pending Rewards</h2>

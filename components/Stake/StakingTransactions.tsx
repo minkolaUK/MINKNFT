@@ -4,10 +4,11 @@ import styles from "../../styles/StakeCoin.module.css";
 interface StakingOption {
   period: number;
   apy: number;
+  status?: string; // Add status property
 }
 
 interface StakingTransaction {
-  amount: any;
+  amount: ethers.BigNumber; // Use ethers.BigNumber instead of `any`
   startTime: number;
   period: number;
 }
@@ -34,7 +35,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ userStakes, s
     <div className={styles.stakedContainer}>
       <h2>Your Staking Transactions</h2>
       {userStakes && userStakes.length > 0 ? (
-        userStakes.map((stake: any, index: number) => {
+        userStakes.map((stake, index) => {
           const { timeStaked, timeRemaining } = calculateTimeStaked(stake.startTime, stake.period);
           const option = stakingOptions.find(opt => opt.period === stake.period);
 
@@ -45,7 +46,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ userStakes, s
               <p>Time Staked: {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
               <p>Time Remaining: {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
               <p>APY: {option ? option.apy : "N/A"}%</p>
-              <p>Status: {option ? option.status : "N/A"}</p>
+              <p>Status: {option ? option.status || "N/A" : "N/A"}</p>
             </div>
           );
         })

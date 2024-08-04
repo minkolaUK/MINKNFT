@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import styles from "../../styles/StakeCoin.module.css";
 import { toast } from "react-toastify";
@@ -12,11 +13,13 @@ interface StakeFormProps {
   isStakeLoading: boolean;
   isUnstakeLoading: boolean;
   coinstakingContract?: any;
+  userStakes?: any[]; // Add userStakes to the props
 }
 
 const StakeForm: React.FC<StakeFormProps> = ({
   amount, setAmount, lockPeriod, setLockPeriod,
-  handleStake, handleUnstake, isStakeLoading, isUnstakeLoading, coinstakingContract
+  handleStake, handleUnstake, isStakeLoading, isUnstakeLoading,
+  coinstakingContract, userStakes
 }) => (
   <div className={styles.inputContainer}>
     <input
