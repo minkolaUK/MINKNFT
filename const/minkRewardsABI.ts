@@ -1,4 +1,4 @@
-export const minkrewardsabi = [
+export const abi = [
   {
     "type": "constructor",
     "name": "",
@@ -547,4 +547,4 @@ export const minkrewardsabi = [
     "outputs": [],
     "stateMutability": "nonpayable"
   }
-];
+]
