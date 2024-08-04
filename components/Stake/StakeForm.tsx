@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../../styles/StakeForm.module.css';
+import styles from '../styles/StakeForm.module.css';
 
 interface StakeFormProps {
   amount: string;
