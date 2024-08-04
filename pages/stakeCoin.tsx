@@ -114,12 +114,9 @@ const StakeCoin = () => {
       console.error("Error processing transaction:", error);
       let errorMessage = "An unexpected error occurred";
       if (error instanceof Error) {
-        const reasonMatch = error.message.match(/Reason: (.+?)(\n|$)/);
-        if (reasonMatch) {
-          errorMessage = reasonMatch[1];
-        } else {
-          errorMessage = error.message;
-        }
+        errorMessage = error.message;
+      } else {
+        errorMessage = String(error);
       }
       toast.error(`Error processing transaction: ${errorMessage}`);
     }
@@ -148,7 +145,14 @@ const StakeCoin = () => {
         `Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`
       );
     } catch (error) {
-      toast.error(`Error staking tokens: ${error.message}`);
+      console.error("Error staking tokens:", error);
+      let errorMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = String(error);
+      }
+      toast.error(`Error staking tokens: ${errorMessage}`);
     }
   };
 
@@ -164,7 +168,14 @@ const StakeCoin = () => {
         "Unstaked successfully!"
       );
     } catch (error) {
-      toast.error(`Error unstaking tokens: ${error.message}`);
+      console.error("Error unstaking tokens:", error);
+      let errorMessage = "An unexpected error occurred";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = String(error);
+      }
+      toast.error(`Error unstaking tokens: ${errorMessage}`);
     }
   };
 
