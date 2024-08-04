@@ -8,7 +8,7 @@ import { abi } from '../const/coinrewardsabi';
 import BalanceInfo from '../components/Stake/BalanceInfo';
 import StakeForm from '../components/Stake/StakeForm';
 import StakingOptions from '../components/Stake/StakingOptions';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 import styles from "../styles/StakeCoin.module.css";
 
 // Define the staking options
@@ -32,6 +32,8 @@ const StakeCoin = () => {
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
   const [estimatedReward, setEstimatedReward] = useState<string>("0.0000 MINK");
+
+  const router = useRouter(); // Initialize the router for navigation
 
   useEffect(() => {
     if (tokenBalanceError) {
@@ -119,15 +121,10 @@ const StakeCoin = () => {
           handleUnstake={handleUnstake}
           isStakeLoading={isStakeLoading}
           isUnstakeLoading={isUnstakeLoading}
-          estimatedReward={estimatedReward} // Pass the estimated reward
+          estimatedReward={estimatedReward}
           coinstakingContract={coinstakingContract}
         />
         <StakingOptions options={stakingOptions} />
-      </div>
-      <div className={styles.buttonContainer}>
-        <Link href="/transactions">
-          My Transactions
-        </Link>
       </div>
     </div>
   );

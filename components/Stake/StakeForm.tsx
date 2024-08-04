@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import styles from "../../styles/StakeCoin.module.css";
 
 interface StakeFormProps {
@@ -28,7 +29,7 @@ const StakeForm: React.FC<StakeFormProps> = ({
 }) => {
   return (
     <div className={styles.formContainer}>
-      <h2>Please enter amount to stake and lock peroid</h2>
+      <h2>Enter Amount to stake and select Lock Period</h2>
       <input
         type="number"
         value={amount}
@@ -46,20 +47,27 @@ const StakeForm: React.FC<StakeFormProps> = ({
         <option value={180 * 24 * 60 * 60}>180 days</option>
         <option value={365 * 24 * 60 * 60}>365 days</option>
       </select>
-      <button
-        onClick={handleStake}
-        disabled={isStakeLoading || !coinstakingContract}
-        className={styles.button}
-      >
-        {isStakeLoading ? 'Staking...' : 'Stake'}
-      </button>
-      <button
-        onClick={() => handleUnstake(0)} // Adjust index or pass dynamically
-        disabled={isUnstakeLoading || !coinstakingContract}
-        className={styles.button}
-      >
-        {isUnstakeLoading ? 'Unstaking...' : 'Unstake'}
-      </button>
+      <div className={styles.buttonContainer}>
+        <button
+          onClick={handleStake}
+          disabled={isStakeLoading || !coinstakingContract}
+          className={styles.button}
+        >
+          {isStakeLoading ? 'Staking...' : 'Stake'}
+        </button>
+        <button
+          onClick={() => handleUnstake(0)} // Adjust index or pass dynamically
+          disabled={isUnstakeLoading || !coinstakingContract}
+          className={styles.button}
+        >
+          {isUnstakeLoading ? 'Unstaking...' : 'Unstake'}
+        </button>
+      </div>
+      <Link href="/transactions" legacyBehavior>
+        <a className={styles.viewTransactionsLink}>
+          View Transactions
+        </a>
+      </Link>
       <div className={styles.estimatedRewardContainer}>
         <h3>Estimated Reward</h3>
         <p>{estimatedReward}</p>
