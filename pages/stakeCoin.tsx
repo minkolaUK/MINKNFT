@@ -39,6 +39,7 @@ const StakeCoin = () => {
   }>({});
 
   const [pendingRewards, setPendingRewards] = useState<string>("0.0000 MINK");
+  const [estimatedReward, setEstimatedReward] = useState<string>("0.0000 MINK");
 
   useEffect(() => {
     if (tokenBalanceError) {
@@ -63,6 +64,20 @@ const StakeCoin = () => {
       fetchPendingRewards();
     }
   }, [address, coinstakingContract]);
+
+  useEffect(() => {
+    const updateEstimatedReward = () => {
+      const selectedOption = stakingOptions.find(option => option.period === lockPeriod);
+      if (selectedOption && amount) {
+        const reward = calculateReward(amount, selectedOption.apy, lockPeriod / (24 * 60 * 60));
+        setEstimatedReward(reward.toFixed(4) + " MINK");
+      } else {
+        setEstimatedReward("0.0000 MINK");
+      }
+    };
+
+    updateEstimatedReward();
+  }, [amount, lockPeriod]);
 
   const getTokenBalance = () => {
     if (!tokenBalance) return "No balance";
@@ -101,14 +116,6 @@ const StakeCoin = () => {
     const daysInYear = 365;
     const interestRate = (apy / 100) * (days / daysInYear);
     return Number(amount) * interestRate;
-  };
-
-  const getEstimatedReward = () => {
-    const selectedOption = stakingOptions.find(option => option.period === lockPeriod);
-    if (selectedOption) {
-      return calculateReward(amount, selectedOption.apy, lockPeriod / (24 * 60 * 60)).toFixed(4);
-    }
-    return "0.0000";
   };
 
   const handleStake = async () => {
@@ -171,7 +178,7 @@ const StakeCoin = () => {
   return (
     <div className={styles.container}>
       <ToastContainer />
-      <div className={styles.header}>Stake and Earn Rewards</div>
+      <div className={styles.header}>Stake Mink Coin & Earn Rewards</div>
 
       {/* Combined Box for Balance, Pending Rewards, and Staked Amount */}
       <div className={styles.stakedContainer}>
@@ -220,6 +227,12 @@ const StakeCoin = () => {
         >
           Unstake
         </button>
+      </div>
+
+      {/* Estimated Rewards Section */}
+      <div className={styles.estimatedRewardContainer}>
+        <h3>Estimated Reward</h3>
+        <p>Based on your input, the estimated reward is: {estimatedReward}</p>
       </div>
 
       <div className={styles.stakingOptionsContainer}>
