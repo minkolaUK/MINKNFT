@@ -25,7 +25,6 @@ const StakeCoin = () => {
     [address]
   );
 
-  // Define contract methods
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
@@ -39,6 +38,8 @@ const StakeCoin = () => {
     status?: string;
   }>({});
 
+  const [pendingRewards, setPendingRewards] = useState<string>("0.0000 MINK");
+
   useEffect(() => {
     if (tokenBalanceError) {
       toast.error("Error fetching token balance. Please try again later.");
@@ -47,6 +48,21 @@ const StakeCoin = () => {
       toast.error("Error fetching staked amount. Please try again later.");
     }
   }, [tokenBalanceError, userStakesError]);
+
+  useEffect(() => {
+    const fetchPendingRewards = async () => {
+      try {
+        const data = await coinstakingContract.call("pendingRewards", [address]);
+        setPendingRewards(ethers.utils.formatUnits(data, 18));
+      } catch (error) {
+        console.error("Error fetching pending rewards:", error);
+      }
+    };
+
+    if (address) {
+      fetchPendingRewards();
+    }
+  }, [address, coinstakingContract]);
 
   const getTokenBalance = () => {
     if (!tokenBalance) return "No balance";
@@ -89,61 +105,20 @@ const StakeCoin = () => {
 
   const getEstimatedReward = () => {
     const selectedOption = stakingOptions.find(option => option.period === lockPeriod);
-    if (!selectedOption) return "Select a valid lock period";
-    const apy = selectedOption.apy;
-    return calculateReward(amount, apy, lockPeriod / (24 * 60 * 60)).toFixed(4);
-  };
-
-  const handleTransaction = async (transactionFn: () => Promise<any>, successMessage: string) => {
-    try {
-      const tx = await transactionFn();
-      if (tx && tx.hash) {
-        const receipt = await tx.wait();
-        setTransactionDetails({
-          hash: tx.hash,
-          amount: amount,
-          timestamp: new Date().toLocaleString(),
-          blockNumber: receipt.blockNumber,
-          status: receipt.status === 1 ? "Success" : "Failed",
-        });
-        toast.success(successMessage);
-      } else {
-        toast.error("Please Confirm Transaction");
-      }
-    } catch (error) {
-      console.error("Error processing transaction:", error);
-      let errorMessage = "An unexpected error occurred";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else {
-        errorMessage = String(error);
-      }
-      toast.error(`Error processing transaction: ${errorMessage}`);
+    if (selectedOption) {
+      return calculateReward(amount, selectedOption.apy, lockPeriod / (24 * 60 * 60)).toFixed(4);
     }
+    return "0.0000";
   };
 
   const handleStake = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      return toast.error("Please enter a valid amount");
-    }
-    if (![90 * 24 * 60 * 60, 180 * 24 * 60 * 60, 365 * 24 * 60 * 60].includes(lockPeriod)) {
-      return toast.error("Please select a valid lock period");
-    }
+    if (isNaN(lockPeriod) || lockPeriod === 0) return toast.error("Please select a valid lock period");
+    if (!amount || isNaN(Number(amount))) return toast.error("Please enter a valid amount");
 
     try {
-      const amountInUnits = ethers.utils.parseUnits(amount, 18);
-      const allowance = await tokenContract?.call("allowance", [address, coinstakingContractAddress]);
-
-      if (ethers.BigNumber.from(allowance).lt(amountInUnits)) {
-        const approvalTx = await tokenContract?.call("approve", [coinstakingContractAddress, ethers.constants.MaxUint256]);
-        await approvalTx.wait(); // Ensure this is correct based on the library
-        toast.success("Approval successful. Proceeding to stake...");
-      }
-
-      await handleTransaction(
-        async () => stake({ args: [amountInUnits, lockPeriod] }),
-        `Staked successfully! Estimated reward: ${getEstimatedReward()} MINK`
-      );
+      await stake({ args: [ethers.utils.parseUnits(amount, 18), lockPeriod] });
+      toast.success("Staked successfully");
+      setTransactionDetails({ status: "Success", amount, timestamp: new Date().toLocaleString() });
     } catch (error) {
       console.error("Error staking tokens:", error);
       let errorMessage = "An unexpected error occurred";
@@ -156,17 +131,13 @@ const StakeCoin = () => {
     }
   };
 
-  const handleUnstake = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      return toast.error("Please enter a valid amount");
-    }
+  const handleUnstake = async (stakeIndex: number) => {
+    if (isNaN(stakeIndex)) return toast.error("Invalid stake index");
 
     try {
-      const amountInUnits = ethers.utils.parseUnits(amount, 18);
-      await handleTransaction(
-        async () => unstake({ args: [amountInUnits] }),
-        "Unstaked successfully!"
-      );
+      await unstake({ args: [stakeIndex, false] });
+      toast.success("Unstaked successfully");
+      setTransactionDetails({ status: "Success", amount: getTotalStakedAmount(), timestamp: new Date().toLocaleString() });
     } catch (error) {
       console.error("Error unstaking tokens:", error);
       let errorMessage = "An unexpected error occurred";
@@ -179,83 +150,110 @@ const StakeCoin = () => {
     }
   };
 
+  const calculateTimeStaked = (startTime: number, period: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const endTime = startTime + period;
+    const timeStaked = Math.max(0, Math.min(now, endTime) - startTime);
+    const timeRemaining = Math.max(0, endTime - now);
+
+    return {
+      timeStaked,
+      timeRemaining
+    };
+  };
+
+  const isUnstakeAllowed = (stakeStartTime: number, stakePeriod: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const endTime = stakeStartTime + stakePeriod;
+    return now >= endTime;
+  };
+
   return (
-    <>
-      <ToastContainer position="bottom-center" autoClose={5000} />
-      <div className={styles.container}>
-        <h1 className={styles.header}>Stake Your Mink Coin</h1>
+    <div className={styles.container}>
+      <ToastContainer />
+      <div className={styles.header}>Stake and Earn Rewards</div>
 
-        {/* Display Balance at the Top */}
-        <div className={styles.balanceContainer}>
-          <p className={styles.balance}>
-            Total Balance: {isTokenBalanceLoading ? "Loading..." : `${getTokenBalance()} Mink Coin`}
-          </p>
+      {/* Combined Box for Balance, Pending Rewards, and Staked Amount */}
+      <div className={styles.stakedContainer}>
+        <h2>Your Staked Amount</h2>
+        <p>{getTotalStakedAmount()}</p>
+        <div className={styles.stakedDetails}>
+          <h3>Total Balance</h3>
+          <p>{getTokenBalance()} MINK</p>
+          <h3>Pending Rewards</h3>
+          <p>{pendingRewards} MINK</p>
         </div>
-
-        {/* Display Staked Amount */}
-        <div className={styles.stakedContainer}>
-          <h3>Your Staked Amount</h3>
-          <p className={styles.stakedAmount}>{isUserStakesLoading ? "Loading..." : getTotalStakedAmount()}</p>
-        </div>
-
-        {/* Stake Input */}
-        <div className={styles.inputContainer}>
-          <input
-            type="text"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount to stake"
-            className={styles.input}
-          />
-          <select value={lockPeriod} onChange={(e) => setLockPeriod(Number(e.target.value))} className={styles.select}>
-            <option value={0}>Select lock period</option>
-            {stakingOptions.map((option) => (
-              <option key={option.period} value={option.period}>
-                {option.period / (24 * 60 * 60)} Days ({option.apy}%)
-              </option>
-            ))}
-          </select>
-          <button onClick={handleStake} disabled={isStakeLoading} className={styles.button}>
-            {isStakeLoading ? "Staking..." : "Stake"}
-          </button>
-          <button onClick={handleUnstake} disabled={isUnstakeLoading} className={`${styles.button} ${styles.marginLeft}`}>
-            {isUnstakeLoading ? "Unstaking..." : "Unstake"}
-          </button>
-        </div>
-
-        {/* Reward Calculator */}
-        <div className={styles.rewardCalculator}>
-          <h3>Estimated Reward</h3>
-          <p>Based on your input, the estimated reward is: {getEstimatedReward()} MINK</p>
-        </div>
-
-        {/* Staking Options */}
-        <div className={styles.stakingOptionsContainer}>
-          {stakingOptions.map((option) => (
-            <div key={option.period} className={styles.stakingOption}>
-              <h3>Lock period: {option.period / (24 * 60 * 60)} days</h3>
-              <p>APY Rate: {option.apy}%</p>
-              <p>Early unstake fee: {option.earlyUnstakeFee ? `${option.earlyUnstakeFee}%` : 'None'}</p>
-              <p>Minimum Staking Amount: {option.minAmount} MINK</p>
-              <p>Maximum Staking Amount: {option.maxAmount}</p>
-              <p>Status: {option.status}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Display Transaction Details */}
-        {transactionDetails.hash && (
-          <div className={styles.transactionDetails}>
-            <h3>Transaction Details</h3>
-            <p><strong>Transaction Hash:</strong> <a href={`https://etc-mordor.blockscout.com/tx/${transactionDetails.hash}`} target="_blank" rel="noopener noreferrer">{transactionDetails.hash}</a></p>
-            <p><strong>Amount Staked:</strong> {transactionDetails.amount} MINK</p>
-            <p><strong>Timestamp:</strong> {transactionDetails.timestamp}</p>
-            <p><strong>Block Number:</strong> {transactionDetails.blockNumber}</p>
-            <p><strong>Status:</strong> {transactionDetails.status}</p>
-          </div>
-        )}
       </div>
-    </>
+
+      <div className={styles.inputContainer}>
+        <input
+          className={styles.input}
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Amount to stake"
+        />
+        <select
+          className={styles.select}
+          onChange={(e) => setLockPeriod(Number(e.target.value))}
+          value={lockPeriod}
+        >
+          <option value={0}>Select Lock Period</option>
+          <option value={90 * 24 * 60 * 60}>90 days</option>
+          <option value={180 * 24 * 60 * 60}>180 days</option>
+          <option value={365 * 24 * 60 * 60}>365 days</option>
+        </select>
+        <button className={styles.button} onClick={handleStake} disabled={isStakeLoading}>Stake</button>
+        <button
+          className={styles.button}
+          onClick={() => {
+            if (userStakes && userStakes.length > 0) {
+              const stake = userStakes[0]; // Example: unstaking the first stake
+              if (isUnstakeAllowed(stake.startTime, stake.period)) {
+                handleUnstake(0); // Use appropriate index
+              } else {
+                toast.error("Unstaking is not allowed yet.");
+              }
+            }
+          }}
+          disabled={isUnstakeLoading}
+        >
+          Unstake
+        </button>
+      </div>
+
+      <div className={styles.stakingOptionsContainer}>
+        {stakingOptions.map((option, index) => (
+          <div className={styles.stakingOption} key={index}>
+            <h3>Lock Period: {option.period / (24 * 60 * 60)} days</h3>
+            <p>APY: {option.apy}%</p>
+            <p>Status: {option.status}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Display staking details if available */}
+      {userStakes && userStakes.length > 0 && (
+        <div className={styles.stakedContainer}>
+          <h2>Staking Details</h2>
+          {userStakes.map((stake: any, index: number) => {
+            const { timeStaked, timeRemaining } = calculateTimeStaked(stake.startTime, stake.period);
+            const option = stakingOptions.find(opt => opt.period === stake.period);
+
+            return (
+              <div key={index} className={styles.stakingOption}>
+                <p>Amount Staked: {stake.amount ? ethers.utils.formatUnits(stake.amount, 18) : "N/A"} MINK</p>
+                <p>Lock Period: {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
+                <p>Time Staked: {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
+                <p>Time Remaining: {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
+                <p>APY: {option ? option.apy : "N/A"}%</p>
+                <p>Status: {option ? option.status : "N/A"}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
