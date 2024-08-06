@@ -26,6 +26,7 @@ const StakeCoin = () => {
     "getStakedBalance",
     [address]
   );
+  const { data: totalStaked, error: totalStakedError } = useContractRead(coinstakingContract, "getTotalStakedAmount");
 
   const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
   const { mutate: approveTokens, isLoading: isApproveLoading } = useContractWrite(tokenContract, "approve");
@@ -281,6 +282,11 @@ const StakeCoin = () => {
           })}
         </div>
       )}
+
+      <div className={styles.totalStakedContainer}>
+        <h2>Total Staked by All Users</h2>
+        <p>{totalStaked ? ethers.utils.formatUnits(totalStaked, 18) + " MINK" : "Fetching..."}</p>
+      </div>
     </div>
   );
 };
