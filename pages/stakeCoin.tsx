@@ -7,6 +7,7 @@ import styles from "../styles/StakeCoin.module.css";
 import { coinstakingContractAddress, tokenContractAddress } from "../const/contractAddresses";
 import { coinRewardsAbi } from '../const/coinrewardsabi';
 import { tokenAbi } from '../const/tokenabi';
+import Link from "next/link";
 
 const stakingOptions = [
   { period: 90 * 24 * 60 * 60, apy: 2, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
@@ -211,9 +212,15 @@ const StakeCoin = () => {
           <option value={180 * 24 * 60 * 60}>180 days</option>
           <option value={365 * 24 * 60 * 60}>365 days</option>
         </select>
-        <button className={styles.button} onClick={handleStake} disabled={isStakeLoading || !coinstakingContract}>Stake</button>
-        <a href="/transactions" className={styles.button} onClick={handleShowTransactions} style={{ marginTop: '5px' }}>Transactions</a>
+        <button className={styles.button} onClick={handleStake} disabled={isStakeLoading || !coinstakingContract}>
+          Stake
+        </button>
+        <Link href="/transactions" legacyBehavior>
+          <a className={styles.viewTransactionsLink}>View Transactions</a>
+        </Link>
       </div>
+
+
 
       {/* Estimated Rewards Section */}
       <div className={styles.estimatedRewardContainer}>
