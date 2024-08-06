@@ -8,9 +8,9 @@ interface StakeFormProps {
   lockPeriod: number;
   setLockPeriod: React.Dispatch<React.SetStateAction<number>>;
   handleStake: () => Promise<void>;
-  handleUnstake: (stakeIndex: number) => Promise<void>;
+  handleUnstake?: (stakeIndex: number) => Promise<void>; // Optional if not used
   isStakeLoading: boolean;
-  isUnstakeLoading: boolean;
+  isUnstakeLoading?: boolean; // Optional if not used
   estimatedReward: string;
   coinstakingContract: any;
 }
@@ -29,7 +29,7 @@ const StakeForm: React.FC<StakeFormProps> = ({
 }) => {
   return (
     <div className={styles.formContainer}>
-      <h2>Enter Amount to stake and select Lock Period</h2>
+      <h2>Enter Amount to Stake and Select Lock Period</h2>
       <input
         type="number"
         value={amount}
@@ -55,13 +55,15 @@ const StakeForm: React.FC<StakeFormProps> = ({
         >
           {isStakeLoading ? 'Staking...' : 'Stake'}
         </button>
-        <button
-          onClick={() => handleUnstake(0)} // Adjust index or pass dynamically
-          disabled={isUnstakeLoading || !coinstakingContract}
-          className={styles.button}
-        >
-          {isUnstakeLoading ? 'Unstaking...' : 'Unstake'}
-        </button>
+        {handleUnstake && (
+          <button
+            onClick={() => handleUnstake(0)} // Replace with actual stake index
+            disabled={isUnstakeLoading || !coinstakingContract}
+            className={styles.button}
+          >
+            {isUnstakeLoading ? 'Unstaking...' : 'Unstake'}
+          </button>
+        )}
       </div>
       <Link href="/transactions" legacyBehavior>
         <a className={styles.viewTransactionsLink}>
