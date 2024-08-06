@@ -161,9 +161,12 @@ const StakeCoin = () => {
     setShowTransactions(!showTransactions);
   };
 
-  function calculateTimeStaked(startTime: any, period: any): { timeStaked: any; timeRemaining: any; } {
-    throw new Error("Function not implemented.");
-  }
+  const calculateTimeStaked = (startTime: number, period: number) => {
+    const now = Math.floor(Date.now() / 1000);
+    const timeStaked = now - startTime;
+    const timeRemaining = startTime + period - now;
+    return { timeStaked, timeRemaining };
+  };
 
   return (
     <div className={styles.container}>
