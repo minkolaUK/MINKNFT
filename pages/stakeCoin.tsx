@@ -10,18 +10,18 @@ import { tokenAbi } from '../const/tokenabi';
 import Link from "next/link";
 
 const stakingOptions = [
-  { period: 90 * 24 * 60 * 60, apy: 2, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 180 * 24 * 60 * 60, apy: 2.5, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
-  { period: 365 * 24 * 60 * 60, apy: 3, earlyUnstakeFee: null, minAmount: 0, maxAmount: '∞', status: 'Active' },
+  { period: 90 * 24 * 60 * 60, apy: 2, minAmount: ethers.utils.parseUnits("1000", 18), maxAmount: "Unlimited", status: 'Active' },
+  { period: 180 * 24 * 60 * 60, apy: 2.5, minAmount: ethers.utils.parseUnits("10000", 18), maxAmount: "Unlimited", status: 'Active' },
+  { period: 365 * 24 * 60 * 60, apy: 3, minAmount: ethers.utils.parseUnits("100000", 18), maxAmount: "Unlimited", status: 'Active' },
 ];
 
 const StakeCoin = () => {
   const address = useAddress();
-  const { contract: coinstakingContract, isLoading: isContractLoading } = useContract(coinstakingContractAddress, coinRewardsAbi);
+  const { contract: coinstakingContract } = useContract(coinstakingContractAddress, coinRewardsAbi);
   const { contract: tokenContract } = useContract(tokenContractAddress, tokenAbi);
 
-  const { data: tokenBalance, isLoading: isTokenBalanceLoading, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
-  const { data: userStakes, isLoading: isUserStakesLoading, error: userStakesError } = useContractRead(
+  const { data: tokenBalance, error: tokenBalanceError } = useTokenBalance(tokenContract, address);
+  const { data: userStakes, error: userStakesError } = useContractRead(
     coinstakingContract,
     "getStakedBalance",
     [address]
@@ -32,14 +32,6 @@ const StakeCoin = () => {
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
-  const [transactionDetails, setTransactionDetails] = useState<{
-    hash?: string;
-    amount?: string;
-    timestamp?: string;
-    blockNumber?: number;
-    status?: string;
-  }>({});
-
   const [pendingRewards, setPendingRewards] = useState<string>("0.0000 MINK");
   const [estimatedReward, setEstimatedReward] = useState<string>("0.0000 MINK");
   const [showTransactions, setShowTransactions] = useState<boolean>(false);
@@ -63,7 +55,6 @@ const StakeCoin = () => {
           console.error("Error fetching pending rewards:", error);
         }
       };
-
       fetchPendingRewards();
     }
   }, [address, coinstakingContract]);
@@ -78,7 +69,6 @@ const StakeCoin = () => {
         setEstimatedReward("0.0000 MINK");
       }
     };
-
     updateEstimatedReward();
   }, [amount, lockPeriod]);
 
@@ -122,11 +112,9 @@ const StakeCoin = () => {
       toast.error("Token contract is not loaded");
       return;
     }
-
     if (isNaN(Number(amount)) || Number(amount) <= 0) {
       return toast.error("Please enter a valid amount to approve");
     }
-
     try {
       await approveTokens({ args: [coinstakingContractAddress, ethers.utils.parseUnits(amount, 18)] });
       toast.success("Approval successful");
@@ -147,20 +135,16 @@ const StakeCoin = () => {
       toast.error("Token contract is not loaded");
       return;
     }
-
     if (isNaN(lockPeriod) || lockPeriod === 0) return toast.error("Please select a valid lock period");
     if (!amount || isNaN(Number(amount))) return toast.error("Please enter a valid amount");
-
     try {
       // Check allowance
       const allowance = await tokenContract.call("allowance", [address, coinstakingContractAddress]);
       if (allowance.lt(ethers.utils.parseUnits(amount, 18))) {
         await handleApprove();
       }
-
-      await stake({ args: [ethers.utils.parseUnits(amount, 18)] });
+      await stake({ args: [ethers.utils.parseUnits(amount, 18), lockPeriod] });
       toast.success("Staked successfully");
-      setTransactionDetails({ status: "Success", amount, timestamp: new Date().toLocaleString() });
     } catch (error) {
       console.error("Error staking tokens:", error);
       let errorMessage = "An unexpected error occurred";
@@ -177,12 +161,15 @@ const StakeCoin = () => {
     setShowTransactions(!showTransactions);
   };
 
+  function calculateTimeStaked(startTime: any, period: any): { timeStaked: any; timeRemaining: any; } {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className={styles.container}>
       <ToastContainer />
       <div className={styles.header}>Stake Mink Coin & Earn Rewards</div>
 
-      {/* Combined Box for Balance, Pending Rewards, and Staked Amount */}
       <div className={styles.stakedContainer}>
         <h2>Your Staked Amount</h2>
         <p>{getTotalStakedAmount()}</p>
@@ -208,21 +195,29 @@ const StakeCoin = () => {
           value={lockPeriod}
         >
           <option value={0}>Select Lock Period</option>
-          <option value={90 * 24 * 60 * 60}>90 days</option>
-          <option value={180 * 24 * 60 * 60}>180 days</option>
-          <option value={365 * 24 * 60 * 60}>365 days</option>
+          {stakingOptions.map((option, index) => (
+            <option key={index} value={option.period}>
+              {option.period / (24 * 60 * 60)} days - Minimum {ethers.utils.formatUnits(option.minAmount, 18)} MINK
+            </option>
+          ))}
         </select>
         <button className={styles.button} onClick={handleStake} disabled={isStakeLoading || !coinstakingContract}>
           Stake
         </button>
         <Link href="/transactions" legacyBehavior>
-          <a className={styles.viewTransactionsLink}>View Transactions</a>
+          <a className={styles.viewTransactionsLink} onClick={handleShowTransactions}>
+            {showTransactions ? "Hide Transactions" : "View Transactions"}
+          </a>
         </Link>
       </div>
 
+      {showTransactions && (
+        <div className={styles.transactionsContainer}>
+          <h2>Transaction History</h2>
+          <p>Transaction history content will go here.</p>
+        </div>
+      )}
 
-
-      {/* Estimated Rewards Section */}
       <div className={styles.estimatedRewardContainer}>
         <h3>Estimated Reward</h3>
         <p>Based on your input, the estimated reward is: {estimatedReward}</p>
@@ -234,16 +229,31 @@ const StakeCoin = () => {
             <h3>Lock Period: {option.period / (24 * 60 * 60)} days</h3>
             <p>APY: {option.apy}%</p>
             <p>Status: {option.status}</p>
+            <p>Min: {ethers.utils.formatUnits(option.minAmount, 18)}</p>
+            <p>Max: {option.maxAmount}</p>
           </div>
         ))}
       </div>
 
-      {/* Transaction History Section */}
-      {showTransactions && (
-        <div className={styles.transactionsContainer}>
-          <h2>Transaction History</h2>
-          {/* Add your transaction history display logic here */}
-          <p>Transaction history content will go here.</p>
+      {/* Display staking details if available */}
+      {userStakes && userStakes.length > 0 && (
+        <div className={styles.stakedContainer}>
+          <h2>Staking Details</h2>
+          {userStakes.map((stake: any, index: number) => {
+            const { timeStaked, timeRemaining } = calculateTimeStaked(stake.startTime, stake.period);
+            const option = stakingOptions.find(opt => opt.period === stake.period);
+
+            return (
+              <div key={index} className={styles.stakingOption}>
+                <p>Amount Staked: {stake.amount ? ethers.utils.formatUnits(stake.amount, 18) : "N/A"} MINK</p>
+                <p>Lock Period: {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
+                <p>Time Staked: {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
+                <p>Time Remaining: {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
+                <p>APY: {option ? option.apy : "N/A"}%</p>
+                <p>Status: {option ? option.status : "N/A"}</p>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
