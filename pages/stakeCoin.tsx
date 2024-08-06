@@ -12,7 +12,7 @@ import Link from "next/link";
 const stakingOptions = [
   { period: 90 * 24 * 60 * 60, apy: 2, minAmount: ethers.utils.parseUnits("1000", 18), maxAmount: "Unlimited", status: 'Active' },
   { period: 180 * 24 * 60 * 60, apy: 2.5, minAmount: ethers.utils.parseUnits("10000", 18), maxAmount: "Unlimited", status: 'Active' },
-  { period: 365 * 24 * 60 * 60, apy: 3, minAmount: ethers.utils.parseUnits("100000", 18), maxAmount: "Unlimited", status: 'Active' },
+  { period: 365 * 24 * 60 * 60, apy: 3, minAmount: ethers.utils.parseUnits("1000000", 18), maxAmount: "Unlimited", status: 'Active' },
 ];
 
 const StakeCoin = () => {
@@ -137,13 +137,36 @@ const StakeCoin = () => {
     }
     if (isNaN(lockPeriod) || lockPeriod === 0) return toast.error("Please select a valid lock period");
     if (!amount || isNaN(Number(amount))) return toast.error("Please enter a valid amount");
+
+    const parsedAmount = ethers.utils.parseUnits(amount, 18);
+
+    // Define specific minimum amounts for each lock period
+    const minAmount90Days = ethers.utils.parseUnits("1000", 18);
+    const minAmount180Days = ethers.utils.parseUnits("10000", 18);
+    const minAmount365Days = ethers.utils.parseUnits("1000000", 18);
+
+    // Determine the minimum amount required based on the selected lock period
+    let requiredMinAmount;
+    if (lockPeriod === 90 * 24 * 60 * 60) {
+      requiredMinAmount = minAmount90Days;
+    } else if (lockPeriod === 180 * 24 * 60 * 60) {
+      requiredMinAmount = minAmount180Days;
+    } else if (lockPeriod === 365 * 24 * 60 * 60) {
+      requiredMinAmount = minAmount365Days;
+    }
+
+    // Check if the amount meets the minimum requirement for the selected option
+    if (requiredMinAmount && parsedAmount.lt(requiredMinAmount)) {
+      return toast.error(`The minimum staking amount for ${lockPeriod / (24 * 60 * 60)} days is ${ethers.utils.formatUnits(requiredMinAmount, 18)} MINK.`);
+    }
+
     try {
       // Check allowance
       const allowance = await tokenContract.call("allowance", [address, coinstakingContractAddress]);
-      if (allowance.lt(ethers.utils.parseUnits(amount, 18))) {
+      if (allowance.lt(parsedAmount)) {
         await handleApprove();
       }
-      await stake({ args: [ethers.utils.parseUnits(amount, 18), lockPeriod] });
+      await stake({ args: [parsedAmount, lockPeriod] });
       toast.success("Staked successfully");
     } catch (error) {
       console.error("Error staking tokens:", error);
@@ -238,7 +261,6 @@ const StakeCoin = () => {
         ))}
       </div>
 
-      {/* Display staking details if available */}
       {userStakes && userStakes.length > 0 && (
         <div className={styles.stakedContainer}>
           <h2>Staking Details</h2>
