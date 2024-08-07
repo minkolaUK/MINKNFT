@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es2015", // Update this to ES2015 or higher
+    "lib": ["dom", "dom.iterable", "es2015"], // Update to include ES2015
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/next-head.d.ts" ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/next-head.d.ts"],
   "exclude": ["node_modules"]
 }
