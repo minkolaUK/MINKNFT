@@ -1,60 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
-import styles from '../../styles/StakeCoin.module.css';
+import React from "react";
+import { BigNumber, ethers } from "ethers";
 
+// Define the shape of each staking transaction
 interface StakingTransaction {
-  amount: string; // Updated to string to handle data from API
+  amount: BigNumber;
   lockPeriod: number;
   startTime: number;
-  timeStaked: number;
-  timeRemaining: number;
-  apy: number;
-  status: string;
-  rewardsPending: string; // Updated to string to handle data from API
+  rewardsPending: BigNumber;
 }
 
+// Define the shape of the props for the StakingTransactions component
 interface StakingTransactionsProps {
-  stakingOptions: { period: number; apy: number; status?: string }[];
+  stakingTransactions: StakingTransaction[];
+  stakingOptions: { period: number; apy: number; status: string }[];
   onUnstake: (index: number) => Promise<void>;
 }
 
-const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingOptions, onUnstake }) => {
-  const [stakingTransactions, setStakingTransactions] = useState<StakingTransaction[]>([]);
-  
-  // Fetch staking transactions on component mount
-  useEffect(() => {
-    const fetchStakingTransactions = async () => {
-      try {
-        // Replace with your Blockscout API endpoint
-        const response = await fetch('https://etc-mordor.blockscout.com/api?module=account&action=tokentx&address=0xe574AC002C39614b34E0B2499dFc1f6FABad8b6D');
-        const data = await response.json();
-
-        const transactions = data.result.map((tx: any) => ({
-          amount: tx.value,
-          lockPeriod: 0, // Adjust this if necessary
-          startTime: parseInt(tx.timeStamp),
-          timeStaked: 0, // Adjust this if necessary
-          timeRemaining: 0, // Adjust this if necessary
-          apy: 0, // Adjust this if necessary
-          status: 'N/A', // Adjust this if necessary
-          rewardsPending: '0', // Adjust this if necessary
-        }));
-
-        setStakingTransactions(transactions);
-      } catch (error) {
-        console.error('Error fetching staking transactions:', error);
-      }
-    };
-
-    fetchStakingTransactions();
-  }, []);
-
+const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake }) => {
   // Calculate the total amount staked
-  const totalAmountStaked = stakingTransactions.reduce((total, tx) => total.add(ethers.BigNumber.from(tx.amount)), ethers.BigNumber.from(0));
+  const totalAmountStaked = stakingTransactions.reduce((total, tx) => total.add(tx.amount), BigNumber.from(0));
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
-    return date.toLocaleString(); // Format to locale string
+    return date.toLocaleDateString(); // Format to locale string
   };
 
   const calculateTimeStaked = (startTime: number, lockPeriod: number) => {
@@ -67,7 +35,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingOption
   };
 
   return (
-    <div className={styles.stakedContainer}>
+    <div>
       <h2>Your Staking Transactions</h2>
       <p>Total Amount Staked: {ethers.utils.formatUnits(totalAmountStaked, 18)} MINK</p>
 
@@ -77,7 +45,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingOption
           const option = stakingOptions.find(opt => opt.period === transaction.lockPeriod);
 
           return (
-            <div key={index} className={styles.stakingOption}>
+            <div key={index}>
               <p>Amount Staked: {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>
               <p>Lock Period: {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
               <p>Time Staked: {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
@@ -86,10 +54,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingOption
               <p>Status: {option ? option.status || "N/A" : "N/A"}</p>
               <p>Rewards Pending: {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
               <p>Date & Time: {formatDate(transaction.startTime)}</p>
-              <button
-                onClick={() => onUnstake(index)}
-                className={styles.unstakeButton}
-              >
+              <button onClick={() => onUnstake(index)}>
                 Unstake
               </button>
               <p>Warning: Early unstaking may result in loss of rewards.</p>

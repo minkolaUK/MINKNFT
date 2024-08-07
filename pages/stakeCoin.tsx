@@ -246,7 +246,7 @@ const StakeCoin = () => {
       )}
 
       <div className={styles.estimatedRewardContainer}>
-        <h3>Estimated Mink Coin Reward:</h3>
+        <h3>Estimated Mink Coin Reward</h3>
         <p>Based on your input, the estimated reward is: {estimatedReward}</p>
       </div>
 

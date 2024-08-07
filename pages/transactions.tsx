@@ -1,5 +1,5 @@
-import { useAddress, useContract, useContractRead, useContractWrite } from "@thirdweb-dev/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { useAddress, useContract, useContractRead, useContractWrite } from '@thirdweb-dev/react';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { coinstakingContractAddress } from "../const/contractAddresses";
@@ -16,11 +16,9 @@ const stakingOptions = [
 
 const MyTransactions: React.FC = () => {
   const address = useAddress();
-  const { contract: coinstakingContract, isLoading: contractLoading } = useContract(coinstakingContractAddress, coinRewardsAbi);
+  const { contract: coinstakingContract } = useContract(coinstakingContractAddress, coinRewardsAbi);
 
-  const { data: stakedBalance, error: stakedBalanceError } = useContractRead(coinstakingContract, "getStakedBalance", [address]);
   const { data: stakingHistory = [], error: stakingHistoryError } = useContractRead(coinstakingContract, "getStakingHistory", [address]);
-  const { data: rewardHistory = [], error: rewardHistoryError } = useContractRead(coinstakingContract, "getRewardHistory", [address]);
 
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
@@ -29,22 +27,12 @@ const MyTransactions: React.FC = () => {
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
   useEffect(() => {
-    if (stakedBalanceError) {
-      const message = stakedBalanceError instanceof Error ? stakedBalanceError.message : "Error fetching staked balance. Please try again later.";
-      toast.error(message);
-      setError(message);
-    }
     if (stakingHistoryError) {
       const message = stakingHistoryError instanceof Error ? stakingHistoryError.message : "Error fetching staking history. Please try again later.";
       toast.error(message);
       setError(message);
     }
-    if (rewardHistoryError) {
-      const message = rewardHistoryError instanceof Error ? rewardHistoryError.message : "Error fetching reward history. Please try again later.";
-      toast.error(message);
-      setError(message);
-    }
-  }, [stakedBalanceError, stakingHistoryError, rewardHistoryError]);
+  }, [stakingHistoryError]);
 
   useEffect(() => {
     const fetchStakingData = async () => {
@@ -82,19 +70,22 @@ const MyTransactions: React.FC = () => {
   const handleUnstake = async (index: number): Promise<void> => {
     if (!coinstakingContract) return;
     try {
-      const tx = await unstake({ args: [index] });
-      // Assuming you can't wait for the transaction directly, set a placeholder hash or use another method to track
-      const placeholderHash = "PLACEHOLDER_HASH"; // Set this according to your logic
-      setTransactionHash(placeholderHash);
+      // Call the unstake method
+      await unstake({ args: [index] });
+
+      // On success, notify the user
       toast.success("Unstaked successfully");
+
+      // Optionally, you can update the transaction hash if the `unstake` function provides one
+      // If not, you might not need this step
+      // setTransactionHash(receipt.hash);
+
     } catch (error) {
       const message = error instanceof Error ? error.message : "An unexpected error occurred";
       console.error("Error unstaking tokens:", error);
       toast.error(`Error unstaking tokens: ${message}`);
     }
   };
-
-  const blockscoutUrl = transactionHash ? `https://etc-mordor.blockscout.com/transactions/${transactionHash}` : "";
 
   return (
     <div className={styles.container}>
@@ -107,12 +98,6 @@ const MyTransactions: React.FC = () => {
           stakingOptions={stakingOptions}
           onUnstake={handleUnstake}
         />
-        {transactionHash && (
-          <div className={styles.transactionLink}>
-            <p>View your transaction details:</p>
-            <a href={blockscoutUrl} target="_blank" rel="noopener noreferrer">View on Blockscout</a>
-          </div>
-        )}
       </div>
     </div>
   );
