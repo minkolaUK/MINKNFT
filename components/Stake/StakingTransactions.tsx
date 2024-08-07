@@ -21,11 +21,13 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
   // Calculate the total amount staked
   const totalAmountStaked = stakingTransactions.reduce((total, tx) => total.add(tx.amount), BigNumber.from(0));
 
+  // Format timestamp into a readable date
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
-    return date.toLocaleDateString(); // Format to locale string
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString(); // Include time for more detail
   };
 
+  // Calculate time staked and time remaining
   const calculateTimeStaked = (startTime: number, lockPeriod: number) => {
     const now = Math.floor(Date.now() / 1000);
     const endTime = startTime + lockPeriod;
@@ -48,11 +50,11 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
           return (
             <div key={index} className={styles.stakingOption}>
               <p><strong>Amount Staked:</strong> {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>
-              <p><strong>Lock Period:</strong> {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
-              <p><strong>Time Staked:</strong> {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
-              <p><strong>Time Remaining:</strong> {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
+              <p><strong>Lock Period:</strong> {option ? (option.period / (24 * 60 * 60)).toFixed(0) : "N/A"} days</p>
+              <p><strong>Time Staked:</strong> {Math.floor(timeStaked / (24 * 60 * 60)).toFixed(0)} days</p>
+              <p><strong>Time Remaining:</strong> {Math.floor(timeRemaining / (24 * 60 * 60)).toFixed(0)} days</p>
               <p><strong>APY:</strong> {option ? option.apy : "N/A"}%</p>
-              <p><strong>Status:</strong> {option ? option.status || "N/A" : "N/A"}</p>
+              <p><strong>Status:</strong> {option ? option.status : "N/A"}</p>
               <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
               <p><strong>Date & Time:</strong> {formatDate(transaction.startTime)}</p>
               <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
