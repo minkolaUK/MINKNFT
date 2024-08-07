@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -21,8 +21,17 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     mapping(address => uint256) private lockEndTimes;
     mapping(address => uint256) private stakingTimestamps;
 
+    
+
+    // Define a struct to hold staking details
+    struct StakingDetail {
+        uint256 amount;
+        uint256 lockPeriod;
+        uint256 timestamp;
+    }
+
     // History mappings
-    mapping(address => uint256[]) private stakingHistory;
+    mapping(address => StakingDetail[]) private stakingHistory;
     mapping(address => uint256[]) private rewardHistory;
 
     // Penalty parameters
@@ -52,11 +61,10 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     // Constructor requires initialOwner for Ownable
     constructor(
         address _minkToken,
-        address initialOwner,
         uint256 _minStakeAmount90Days,
         uint256 _minStakeAmount180Days,
         uint256 _minStakeAmount365Days
-    ) Ownable(initialOwner) ReentrancyGuard() {
+    ) Ownable() ReentrancyGuard() {
         require(_minkToken != address(0), "Token address cannot be zero");
         minkToken = IERC20(_minkToken);
         minStakeAmount90Days = _minStakeAmount90Days;
@@ -106,10 +114,15 @@ contract MinkRewards is Ownable, ReentrancyGuard {
         lockEndTimes[_user] = block.timestamp.add(_lockPeriod);
 
         // Record staking history
-        stakingHistory[_user].push(block.timestamp);
+        stakingHistory[_user].push(StakingDetail({
+            amount: _amount,
+            lockPeriod: _lockPeriod,
+            timestamp: block.timestamp
+        }));
 
         emit Staked(_user, _amount, _lockPeriod, block.timestamp);
     }
+
 
     function unstake(uint256 _amount) external nonReentrant {
         require(_amount > 0, "Amount must be greater than zero");
@@ -125,14 +138,17 @@ contract MinkRewards is Ownable, ReentrancyGuard {
             rewards[msg.sender] = 0; // Lose all rewards if unstaking all staked tokens
         }
 
+        // Update state variables before making external calls
         totalStaked = totalStaked.sub(_amount);
         stakes[msg.sender] = stakes[msg.sender].sub(_amount);
 
+        // External call to transfer tokens
         bool success = minkToken.transfer(msg.sender, _amount);
         require(success, "Token transfer failed");
 
         emit Unstaked(msg.sender, _amount, block.timestamp);
     }
+
 
     function claimReward() external nonReentrant {
         updateReward(msg.sender);
@@ -172,7 +188,7 @@ contract MinkRewards is Ownable, ReentrancyGuard {
         return lockEndTimes[_user];
     }
 
-    function getStakingHistory(address _user) external view returns (uint256[] memory) {
+    function getStakingHistory(address _user) external view returns (StakingDetail[] memory) {
         return stakingHistory[_user];
     }
 
@@ -212,8 +228,10 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     }
 
     function calculateAPY() public view returns (uint256) {
-        uint256 dailyRewardRate = rewardRate.mul(86400).div(REWARD_SCALE);
-        uint256 apy = (dailyRewardRate.add(1)**365).sub(1);
+        // Assuming rewardRate is given per second, calculate APY for 1 year (365 days)
+        uint256 secondsPerYear = 365 * 24 * 60 * 60;
+        uint256 rewardRatePerYear = rewardRate.mul(secondsPerYear).div(REWARD_SCALE);
+        uint256 apy = rewardRatePerYear; // This will need to be scaled or formatted according to your needs
         return apy;
     }
 

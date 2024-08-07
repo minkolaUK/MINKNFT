@@ -5,8 +5,8 @@ import styles from '../../styles/StakeCoin.module.css'; // Ensure this path is c
 // Define the shape of each staking transaction
 interface StakingTransaction {
   amount: BigNumber;
-  lockPeriod: number;
-  startTime: number;
+  lockPeriod: BigNumber;
+  startTime: BigNumber;
   rewardsPending: BigNumber;
 }
 
@@ -22,7 +22,6 @@ interface StakingTransactionsProps {
 const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake, totalAmountStaked }) => {
   // Calculate the total amount staked
   console.log("Staking Transactions: ", stakingTransactions);
-  console.log("Total Amount Staked: ", totalAmountStaked);
   
   // Format timestamp into a readable date
   const formatDate = (timestamp: number) => {
@@ -30,15 +29,23 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString(); // Include time for more detail
   };
 
-  // Calculate time staked and time remaining
-  const calculateTimeStaked = (startTime: number, lockPeriod: number) => {
-    const now = Math.floor(Date.now() / 1000);
-    const endTime = startTime + lockPeriod;
-    const timeStaked = Math.max(0, Math.min(now, endTime) - startTime);
-    const timeRemaining = Math.max(0, endTime - now);
+// Calculate time staked and time remaining
+const calculateTimeStaked = (startTime: BigNumber, lockPeriod: BigNumber) => {
 
-    return { timeStaked, timeRemaining };
-  };
+  // Convert BigNumber values to JavaScript numbers
+  const startTimeNumber = startTime.toNumber();
+  const lockPeriodNumber = lockPeriod.toNumber();
+  console.log("Lock Time:", lockPeriodNumber); // Convert BigNumber to string for logging
+
+  const now = Math.floor(Date.now() / 1000);
+  const endTime = startTimeNumber + lockPeriodNumber;
+  console.log("End Time:", endTime);
+
+  const timeStaked = now - startTimeNumber;
+  const timeRemaining = Math.max(0, endTime - now);
+
+  return { timeStaked, timeRemaining };
+};
 
   return (
     <div className={styles.stakedContainer}>
@@ -51,7 +58,8 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
       {stakingTransactions.length > 0 ? (
         stakingTransactions.map((transaction, index) => {
           const { timeStaked, timeRemaining } = calculateTimeStaked(transaction.startTime, transaction.lockPeriod);
-          const option = stakingOptions.find(opt => opt.period === transaction.lockPeriod);
+          console.log("Time Remaining: ", timeRemaining);
+          const option = stakingOptions.find(opt => opt.period === transaction.lockPeriod.toNumber());
  
           return (
             <div key={index} className={styles.stakingOption}>
@@ -62,7 +70,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
               <p><strong>APY:</strong> {option ? option.apy : "N/A"}%</p>
               <p><strong>Status:</strong> {option ? option.status : "N/A"}</p>
               <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
-              <p><strong>Date & Time:</strong> {formatDate(transaction.startTime)}</p>
+              <p><strong>Date & Time:</strong> {formatDate(transaction.startTime.toNumber())}</p>
               <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
                 Unstake
               </button>

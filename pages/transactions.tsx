@@ -19,13 +19,14 @@ const MyTransactions: React.FC = () => {
   const { contract: coinstakingContract } = useContract(coinstakingContractAddress, coinRewardsAbi);
 
   const { data: stakingHistory = [], error: stakingHistoryError } = useContractRead(coinstakingContract, "getStakingHistory", [address]);
+  console.log("Staking History: ", stakingHistory)
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
   const [totalAmountStaked, setTotalAmountStaked] = useState<ethers.BigNumber | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stakingTransactions, setStakingTransactions] = useState<any[]>([]);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (stakingHistoryError) {
       const message = stakingHistoryError instanceof Error ? stakingHistoryError.message : "Error fetching staking history. Please try again later.";
@@ -50,18 +51,21 @@ const MyTransactions: React.FC = () => {
       // Fetch staking history
       try {
         const transactions = await Promise.all(stakingHistory.map(async (timestamp: number, index: number) => {
-          const amountStaked = await coinstakingContract.call("getStakedBalance", [address]);
-          const period = stakingOptions.find(opt => opt.period === (timestamp + 90 * 24 * 60 * 60 - timestamp))?.period || 0;
-          const lockEndTime = timestamp + period;
+          const amountStaked = stakingHistory[index].amount;
+          console.log("Amount", amountStaked);
+          const period = stakingHistory[index].lockPeriod;
+          console.log("Period: ", period);
+          const timeStaked = stakingHistory[index].timestamp;
+          console.log("Time Staked: ", timeStaked);
+          const lockEndTime = timeStaked + period;
           const now = Math.floor(Date.now() / 1000);
-          const timeStaked = Math.max(0, Math.min(now, lockEndTime) - timestamp);
           const timeRemaining = Math.max(0, lockEndTime - now);
           const option = stakingOptions.find(opt => opt.period === period);
 
           return {
             amount: amountStaked,
             lockPeriod: period,
-            startTime: timestamp,
+            startTime: timeStaked,
             timeStaked: Math.floor(timeStaked / (24 * 60 * 60)),
             timeRemaining: Math.floor(timeRemaining / (24 * 60 * 60)),
             apy: option ? option.apy : 0,

@@ -1,651 +1,659 @@
 export const coinRewardsAbi = [
-    {
-      "type": "constructor",
-      "name": "",
+  {
       "inputs": [
-        {
-          "type": "address",
-          "name": "_minkToken",
-          "internalType": "address"
-        },
-        {
-          "type": "uint256",
-          "name": "_minStakeAmount90Days",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "_minStakeAmount180Days",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "_minStakeAmount365Days",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "address",
+              "name": "_minkToken",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_minStakeAmount90Days",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_minStakeAmount180Days",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_minStakeAmount365Days",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "event",
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "min90Days",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "min180Days",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "min365Days",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
+      ],
       "name": "MinimumStakeAmountsUpdated",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "uint256",
-          "name": "min90Days",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "min180Days",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "min365Days",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "OwnershipTransferred",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "address",
-          "name": "previousOwner",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "type": "address",
-          "name": "newOwner",
-          "indexed": true,
-          "internalType": "address"
-        }
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newPenaltyPercentage",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "PenaltyPercentageUpdated",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "uint256",
-          "name": "newPenaltyPercentage",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "reward",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "RewardPaid",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "address",
-          "name": "user",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "type": "uint256",
-          "name": "reward",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "newRate",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "RewardRateUpdated",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "uint256",
-          "name": "newRate",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "lockPeriod",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "Staked",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
       "inputs": [
-        {
-          "type": "address",
-          "name": "user",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "type": "uint256",
-          "name": "amount",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "lockPeriod",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "event",
       "name": "Unstaked",
+      "type": "event"
+  },
+  {
       "inputs": [
-        {
-          "type": "address",
-          "name": "user",
-          "indexed": true,
-          "internalType": "address"
-        },
-        {
-          "type": "uint256",
-          "name": "amount",
-          "indexed": false,
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "timestamp",
-          "indexed": false,
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "address[]",
+              "name": "_users",
+              "type": "address[]"
+          },
+          {
+              "internalType": "uint256[]",
+              "name": "_amounts",
+              "type": "uint256[]"
+          },
+          {
+              "internalType": "uint256[]",
+              "name": "_lockPeriods",
+              "type": "uint256[]"
+          }
       ],
-      "outputs": [],
-      "anonymous": false
-    },
-    {
-      "type": "function",
       "name": "batchStake",
-      "inputs": [
-        {
-          "type": "address[]",
-          "name": "_users",
-          "internalType": "address[]"
-        },
-        {
-          "type": "uint256[]",
-          "name": "_amounts",
-          "internalType": "uint256[]"
-        },
-        {
-          "type": "uint256[]",
-          "name": "_lockPeriods",
-          "internalType": "uint256[]"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "calculateAPY",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "calculateReward",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "claimReward",
-      "inputs": [],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getLockEndTime",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getRewardBalance",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getRewardHistory",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256[]",
-          "name": "",
-          "internalType": "uint256[]"
-        }
+          {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getStakedBalance",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getStakingDuration",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_user",
+              "type": "address"
+          }
+      ],
       "name": "getStakingHistory",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "_user",
-          "internalType": "address"
-        }
-      ],
       "outputs": [
-        {
-          "type": "uint256[]",
-          "name": "",
-          "internalType": "uint256[]"
-        }
+          {
+              "components": [
+                  {
+                      "internalType": "uint256",
+                      "name": "amount",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "lockPeriod",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "timestamp",
+                      "type": "uint256"
+                  }
+              ],
+              "internalType": "struct MinkRewards.StakingDetail[]",
+              "name": "",
+              "type": "tuple[]"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "getTotalRewardsDistributed",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "lockPeriod180Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "lockPeriod365Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "lockPeriod90Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "minStakeAmount180Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "minStakeAmount365Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "minStakeAmount90Days",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "minkToken",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "address",
-          "name": "",
-          "internalType": "contract IERC20"
-        }
+          {
+              "internalType": "contract IERC20",
+              "name": "",
+              "type": "address"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "owner",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "address",
-          "name": "",
-          "internalType": "address"
-        }
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "penaltyPercentage",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "renounceOwnership",
-      "inputs": [],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "rewardRate",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_lockPeriod",
+              "type": "uint256"
+          }
+      ],
       "name": "stake",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "_amount",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "_lockPeriod",
-          "internalType": "uint256"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "totalRewardsDistributed",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
       "name": "totalStaked",
-      "inputs": [],
       "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
-      "stateMutability": "view"
-    },
-    {
-      "type": "function",
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+          }
+      ],
       "name": "transferOwnership",
-      "inputs": [
-        {
-          "type": "address",
-          "name": "newOwner",
-          "internalType": "address"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          }
+      ],
       "name": "unstake",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "_amount",
-          "internalType": "uint256"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_min90Days",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_min180Days",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_min365Days",
+              "type": "uint256"
+          }
+      ],
       "name": "updateMinimumStakeAmounts",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "_min90Days",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "_min180Days",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "_min365Days",
-          "internalType": "uint256"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_newPenaltyPercentage",
+              "type": "uint256"
+          }
+      ],
       "name": "updatePenaltyPercentage",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "_newPenaltyPercentage",
-          "internalType": "uint256"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    },
-    {
-      "type": "function",
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_newRate",
+              "type": "uint256"
+          }
+      ],
       "name": "updateRewardRate",
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "_newRate",
-          "internalType": "uint256"
-        }
-      ],
       "outputs": [],
-      "stateMutability": "nonpayable"
-    }
-  ]
+      "stateMutability": "nonpayable",
+      "type": "function"
+  }
+]
