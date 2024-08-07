@@ -198,13 +198,13 @@ const StakeCoin = () => {
       <div className={styles.header}>Stake Mink Coin & Earn Rewards</div>
 
       <div className={styles.stakedContainer}>
-        <h2>Your Staked Amount</h2>
+        <h2>Total Staked Amount:</h2>
         <p>{getTotalStakedAmount()}</p>
         <div className={styles.stakedDetails}>
-          <h3>Total Balance</h3>
-          <p>{getTokenBalance()} MINK</p>
-          <h3>Pending Rewards</h3>
-          <p>{pendingRewards} MINK</p>
+          <h3>Your Mink Coin Balance:</h3>
+          <p>{getTokenBalance()} MINK Coin</p>
+          <h3>Your Total Pending Rewards:</h3>
+          <p>{pendingRewards} MINK Coin</p>
         </div>
       </div>
 
@@ -246,7 +246,7 @@ const StakeCoin = () => {
       )}
 
       <div className={styles.estimatedRewardContainer}>
-        <h3>Estimated Reward</h3>
+        <h3>Estimated Mink Coin Reward:</h3>
         <p>Based on your input, the estimated reward is: {estimatedReward}</p>
       </div>
 
