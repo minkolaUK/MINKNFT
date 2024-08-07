@@ -117,8 +117,10 @@ const StakeCoin = () => {
       return toast.error("Please enter a valid amount to approve");
     }
     try {
-      await approveTokens({ args: [coinstakingContractAddress, ethers.utils.parseUnits(amount, 18)] });
-      toast.success("Approval successful");
+      const approveTokens = await tokenContract.call("approve", [coinstakingContractAddress, ethers.utils.parseUnits(amount, 18)])
+      if(approveTokens){
+        toast.success("Approval successful");
+      }
     } catch (error) {
       console.error("Error approving tokens:", error);
       let errorMessage = "An unexpected error occurred";
@@ -167,8 +169,12 @@ const StakeCoin = () => {
       if (allowance.lt(parsedAmount)) {
         await handleApprove();
       }
-      await stake({ args: [parsedAmount, lockPeriod] });
-      toast.success("Staked successfully");
+
+      const stake = await coinstakingContract?.call("stake", [parsedAmount, lockPeriod])
+      if(stake){
+        toast.success("Staked successfully");
+      }
+      
     } catch (error) {
       console.error("Error staking tokens:", error);
       let errorMessage = "An unexpected error occurred";

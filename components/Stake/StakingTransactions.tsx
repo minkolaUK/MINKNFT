@@ -15,12 +15,15 @@ interface StakingTransactionsProps {
   stakingTransactions: StakingTransaction[];
   stakingOptions: { period: number; apy: number; status: string }[];
   onUnstake: (index: number) => Promise<void>;
+  totalAmountStaked: ethers.BigNumber | null; // Add this line
+
 }
 
-const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake }) => {
+const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake, totalAmountStaked }) => {
   // Calculate the total amount staked
-  const totalAmountStaked = stakingTransactions.reduce((total, tx) => total.add(tx.amount), BigNumber.from(0));
-
+  console.log("Staking Transactions: ", stakingTransactions);
+  console.log("Total Amount Staked: ", totalAmountStaked);
+  
   // Format timestamp into a readable date
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
@@ -40,13 +43,16 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
   return (
     <div className={styles.stakedContainer}>
       <h2>Your Staking Transactions</h2>
-      <p>Total Amount Staked: {ethers.utils.formatUnits(totalAmountStaked, 18)} MINK</p>
-
+      <p>
+        Total Amount Staked:{" "}
+        {totalAmountStaked ? ethers.utils.formatUnits(totalAmountStaked, 18) : "Loading..."} MINK
+      </p>
+      
       {stakingTransactions.length > 0 ? (
         stakingTransactions.map((transaction, index) => {
           const { timeStaked, timeRemaining } = calculateTimeStaked(transaction.startTime, transaction.lockPeriod);
           const option = stakingOptions.find(opt => opt.period === transaction.lockPeriod);
-
+ 
           return (
             <div key={index} className={styles.stakingOption}>
               <p><strong>Amount Staked:</strong> {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>

@@ -19,9 +19,9 @@ const MyTransactions: React.FC = () => {
   const { contract: coinstakingContract } = useContract(coinstakingContractAddress, coinRewardsAbi);
 
   const { data: stakingHistory = [], error: stakingHistoryError } = useContractRead(coinstakingContract, "getStakingHistory", [address]);
-
   const { mutate: unstake, isLoading: isUnstakeLoading } = useContractWrite(coinstakingContract, "unstake");
 
+  const [totalAmountStaked, setTotalAmountStaked] = useState<ethers.BigNumber | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stakingTransactions, setStakingTransactions] = useState<any[]>([]);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
@@ -38,30 +38,43 @@ const MyTransactions: React.FC = () => {
     const fetchStakingData = async () => {
       if (!coinstakingContract) return;
 
-      const transactions = await Promise.all(stakingHistory.map(async (timestamp: number, index: number) => {
-        // Assuming the staking amount can be fetched by index. Adjust if necessary.
-        const amountStaked = await coinstakingContract.call("getStakedBalance", [address]);
+      // Fetch total amount staked
+      try {
+        const amount = await coinstakingContract.call("getStakedBalance", [address]);
+        setTotalAmountStaked(amount);
+      } catch (error) {
+        console.error("Error fetching total amount staked:", error);
+        toast.error("Error fetching total amount staked.");
+      }
 
-        const period = stakingOptions.find(opt => opt.period === (timestamp + 90 * 24 * 60 * 60 - timestamp))?.period || 0;
-        const lockEndTime = timestamp + period;
-        const now = Math.floor(Date.now() / 1000);
-        const timeStaked = Math.max(0, Math.min(now, lockEndTime) - timestamp);
-        const timeRemaining = Math.max(0, lockEndTime - now);
-        const option = stakingOptions.find(opt => opt.period === period);
+      // Fetch staking history
+      try {
+        const transactions = await Promise.all(stakingHistory.map(async (timestamp: number, index: number) => {
+          const amountStaked = await coinstakingContract.call("getStakedBalance", [address]);
+          const period = stakingOptions.find(opt => opt.period === (timestamp + 90 * 24 * 60 * 60 - timestamp))?.period || 0;
+          const lockEndTime = timestamp + period;
+          const now = Math.floor(Date.now() / 1000);
+          const timeStaked = Math.max(0, Math.min(now, lockEndTime) - timestamp);
+          const timeRemaining = Math.max(0, lockEndTime - now);
+          const option = stakingOptions.find(opt => opt.period === period);
 
-        return {
-          amount: amountStaked,
-          lockPeriod: period,
-          startTime: timestamp,
-          timeStaked: Math.floor(timeStaked / (24 * 60 * 60)),
-          timeRemaining: Math.floor(timeRemaining / (24 * 60 * 60)),
-          apy: option ? option.apy : 0,
-          status: option ? option.status : "N/A",
-          rewardsPending: ethers.BigNumber.from("0"), // Fetch actual rewards if necessary
-        };
-      }));
+          return {
+            amount: amountStaked,
+            lockPeriod: period,
+            startTime: timestamp,
+            timeStaked: Math.floor(timeStaked / (24 * 60 * 60)),
+            timeRemaining: Math.floor(timeRemaining / (24 * 60 * 60)),
+            apy: option ? option.apy : 0,
+            status: option ? option.status : "N/A",
+            rewardsPending: ethers.BigNumber.from("0"), // Fetch actual rewards if necessary
+          };
+        }));
 
-      setStakingTransactions(transactions);
+        setStakingTransactions(transactions);
+      } catch (error) {
+        console.error("Error fetching staking data:", error);
+        toast.error("Error fetching staking data.");
+      }
     };
 
     fetchStakingData();
@@ -70,16 +83,8 @@ const MyTransactions: React.FC = () => {
   const handleUnstake = async (index: number): Promise<void> => {
     if (!coinstakingContract) return;
     try {
-      // Call the unstake method
       await unstake({ args: [index] });
-
-      // On success, notify the user
       toast.success("Unstaked successfully");
-
-      // Optionally, you can update the transaction hash if the `unstake` function provides one
-      // If not, you might not need this step
-      // setTransactionHash(receipt.hash);
-
     } catch (error) {
       const message = error instanceof Error ? error.message : "An unexpected error occurred";
       console.error("Error unstaking tokens:", error);
@@ -97,6 +102,7 @@ const MyTransactions: React.FC = () => {
           stakingTransactions={stakingTransactions}
           stakingOptions={stakingOptions}
           onUnstake={handleUnstake}
+          totalAmountStaked={totalAmountStaked}
         />
       </div>
     </div>
