@@ -4,8 +4,11 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract MinkRewards is Ownable, ReentrancyGuard {
+    using SafeMath for uint256;
+
     IERC20 public immutable minkToken;
 
     // State variables
@@ -26,33 +29,57 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     uint256 public penaltyPercentage = 100; // Reward percentage to lose on early unstaking
 
     // Stake limits
-    uint256 public minStakeAmount90Days = 1000e18;
-    uint256 public minStakeAmount180Days = 10000e18;
-    uint256 public minStakeAmount365Days = 1000000e18;
+    uint256 public immutable minStakeAmount90Days;
+    uint256 public immutable minStakeAmount180Days;
+    uint256 public immutable minStakeAmount365Days;
 
-    uint256 public lockPeriod90Days = 90 days;
-    uint256 public lockPeriod180Days = 180 days;
-    uint256 public lockPeriod365Days = 365 days;
+    uint256 public immutable lockPeriod90Days = 90 days;
+    uint256 public immutable lockPeriod180Days = 180 days;
+    uint256 public immutable lockPeriod365Days = 365 days;
 
     // Reward rate and constants
     uint256 public rewardRate = 1000;
     uint256 private constant REWARD_SCALE = 1e18;
 
     // Event declarations
-    event Staked(address indexed user, uint256 amount, uint256 lockPeriod);
-    event Unstaked(address indexed user, uint256 amount);
-    event RewardPaid(address indexed user, uint256 reward);
-    event RewardRateUpdated(uint256 newRate);
-    event MinimumStakeAmountsUpdated(uint256 min90Days, uint256 min180Days, uint256 min365Days);
-    event PenaltyPercentageUpdated(uint256 newPenaltyPercentage);
+    event Staked(address indexed user, uint256 amount, uint256 lockPeriod, uint256 timestamp);
+    event Unstaked(address indexed user, uint256 amount, uint256 timestamp);
+    event RewardPaid(address indexed user, uint256 reward, uint256 timestamp);
+    event RewardRateUpdated(uint256 newRate, uint256 timestamp);
+    event MinimumStakeAmountsUpdated(uint256 min90Days, uint256 min180Days, uint256 min365Days, uint256 timestamp);
+    event PenaltyPercentageUpdated(uint256 newPenaltyPercentage, uint256 timestamp);
 
     // Constructor requires initialOwner for Ownable
-    constructor(address _minkToken, address initialOwner) Ownable(initialOwner) ReentrancyGuard() {
+    constructor(
+        address _minkToken,
+        address initialOwner,
+        uint256 _minStakeAmount90Days,
+        uint256 _minStakeAmount180Days,
+        uint256 _minStakeAmount365Days
+    ) Ownable(initialOwner) ReentrancyGuard() {
         require(_minkToken != address(0), "Token address cannot be zero");
         minkToken = IERC20(_minkToken);
+        minStakeAmount90Days = _minStakeAmount90Days;
+        minStakeAmount180Days = _minStakeAmount180Days;
+        minStakeAmount365Days = _minStakeAmount365Days;
+    }
+
+    function batchStake(
+        address[] calldata _users,
+        uint256[] calldata _amounts,
+        uint256[] calldata _lockPeriods
+    ) external onlyOwner nonReentrant {
+        require(_users.length == _amounts.length && _users.length == _lockPeriods.length, "Mismatched input lengths");
+        for (uint256 i = 0; i < _users.length; i++) {
+            stakeForUser(_users[i], _amounts[i], _lockPeriods[i]);
+        }
     }
 
     function stake(uint256 _amount, uint256 _lockPeriod) external nonReentrant {
+        stakeForUser(msg.sender, _amount, _lockPeriod);
+    }
+
+    function stakeForUser(address _user, uint256 _amount, uint256 _lockPeriod) internal {
         require(_amount > 0, "Amount must be greater than zero");
 
         uint256 minStakeAmount;
@@ -68,20 +95,20 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
         require(_amount >= minStakeAmount, "Amount is below minimum stake for the selected lock period");
 
-        updateReward(msg.sender);
+        updateReward(_user);
 
-        bool success = minkToken.transferFrom(msg.sender, address(this), _amount);
+        bool success = minkToken.transferFrom(_user, address(this), _amount);
         require(success, "Token transfer failed");
 
-        totalStaked += _amount;
-        stakes[msg.sender] += _amount;
-        stakingTimestamps[msg.sender] = block.timestamp;
-        lockEndTimes[msg.sender] = block.timestamp + _lockPeriod;
+        totalStaked = totalStaked.add(_amount);
+        stakes[_user] = stakes[_user].add(_amount);
+        stakingTimestamps[_user] = block.timestamp;
+        lockEndTimes[_user] = block.timestamp.add(_lockPeriod);
 
         // Record staking history
-        stakingHistory[msg.sender].push(block.timestamp);
+        stakingHistory[_user].push(block.timestamp);
 
-        emit Staked(msg.sender, _amount, _lockPeriod);
+        emit Staked(_user, _amount, _lockPeriod, block.timestamp);
     }
 
     function unstake(uint256 _amount) external nonReentrant {
@@ -98,13 +125,13 @@ contract MinkRewards is Ownable, ReentrancyGuard {
             rewards[msg.sender] = 0; // Lose all rewards if unstaking all staked tokens
         }
 
-        totalStaked -= _amount;
-        stakes[msg.sender] -= _amount;
+        totalStaked = totalStaked.sub(_amount);
+        stakes[msg.sender] = stakes[msg.sender].sub(_amount);
 
         bool success = minkToken.transfer(msg.sender, _amount);
         require(success, "Token transfer failed");
 
-        emit Unstaked(msg.sender, _amount);
+        emit Unstaked(msg.sender, _amount, block.timestamp);
     }
 
     function claimReward() external nonReentrant {
@@ -117,25 +144,25 @@ contract MinkRewards is Ownable, ReentrancyGuard {
         bool success = minkToken.transfer(msg.sender, reward);
         require(success, "Reward transfer failed");
 
-        totalRewardsDistributed += reward; // Update total rewards distributed
+        totalRewardsDistributed = totalRewardsDistributed.add(reward);
 
         // Record reward history
         rewardHistory[msg.sender].push(reward);
 
-        emit RewardPaid(msg.sender, reward);
+        emit RewardPaid(msg.sender, reward, block.timestamp);
     }
 
     function updateReward(address _user) internal {
-        uint256 timeElapsed = block.timestamp - lastUpdate[_user];
+        uint256 timeElapsed = block.timestamp.sub(lastUpdate[_user]);
         if (stakes[_user] > 0 && timeElapsed > 0) {
-            rewards[_user] += (stakes[_user] * rewardRate * timeElapsed) / REWARD_SCALE;
+            rewards[_user] = rewards[_user].add((stakes[_user].mul(rewardRate).mul(timeElapsed)).div(REWARD_SCALE));
         }
         lastUpdate[_user] = block.timestamp;
     }
 
     function getStakingDuration(address _user) external view returns (uint256) {
         if (stakes[_user] > 0) {
-            return block.timestamp - stakingTimestamps[_user];
+            return block.timestamp.sub(stakingTimestamps[_user]);
         } else {
             return 0;
         }
@@ -155,7 +182,7 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
     function updateRewardRate(uint256 _newRate) external onlyOwner {
         rewardRate = _newRate;
-        emit RewardRateUpdated(_newRate);
+        emit RewardRateUpdated(_newRate, block.timestamp);
     }
 
     function updateMinimumStakeAmounts(
@@ -163,16 +190,12 @@ contract MinkRewards is Ownable, ReentrancyGuard {
         uint256 _min180Days,
         uint256 _min365Days
     ) external onlyOwner {
-        minStakeAmount90Days = _min90Days;
-        minStakeAmount180Days = _min180Days;
-        minStakeAmount365Days = _min365Days;
-
-        emit MinimumStakeAmountsUpdated(_min90Days, _min180Days, _min365Days);
+        emit MinimumStakeAmountsUpdated(_min90Days, _min180Days, _min365Days, block.timestamp);
     }
 
     function updatePenaltyPercentage(uint256 _newPenaltyPercentage) external onlyOwner {
         penaltyPercentage = _newPenaltyPercentage;
-        emit PenaltyPercentageUpdated(_newPenaltyPercentage);
+        emit PenaltyPercentageUpdated(_newPenaltyPercentage, block.timestamp);
     }
 
     function getStakedBalance(address _user) external view returns (uint256) {
@@ -184,13 +207,13 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     }
 
     function calculateReward(address _user) public view returns (uint256) {
-        uint256 timeElapsed = block.timestamp - lastUpdate[_user];
-        return (stakes[_user] * rewardRate * timeElapsed) / REWARD_SCALE + rewards[_user];
+        uint256 timeElapsed = block.timestamp.sub(lastUpdate[_user]);
+        return (stakes[_user].mul(rewardRate).mul(timeElapsed)).div(REWARD_SCALE).add(rewards[_user]);
     }
 
     function calculateAPY() public view returns (uint256) {
-        uint256 dailyRewardRate = rewardRate * 86400 / REWARD_SCALE;
-        uint256 apy = (dailyRewardRate + 1) ** 365 - 1;
+        uint256 dailyRewardRate = rewardRate.mul(86400).div(REWARD_SCALE);
+        uint256 apy = (dailyRewardRate.add(1)**365).sub(1);
         return apy;
     }
 
