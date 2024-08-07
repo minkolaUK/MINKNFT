@@ -1,5 +1,6 @@
 import React from "react";
 import { BigNumber, ethers } from "ethers";
+import styles from '../../styles/StakeCoin.module.css'; // Ensure this path is correct
 
 // Define the shape of each staking transaction
 interface StakingTransaction {
@@ -35,7 +36,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
   };
 
   return (
-    <div>
+    <div className={styles.stakedContainer}>
       <h2>Your Staking Transactions</h2>
       <p>Total Amount Staked: {ethers.utils.formatUnits(totalAmountStaked, 18)} MINK</p>
 
@@ -45,19 +46,19 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
           const option = stakingOptions.find(opt => opt.period === transaction.lockPeriod);
 
           return (
-            <div key={index}>
-              <p>Amount Staked: {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>
-              <p>Lock Period: {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
-              <p>Time Staked: {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
-              <p>Time Remaining: {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
-              <p>APY: {option ? option.apy : "N/A"}%</p>
-              <p>Status: {option ? option.status || "N/A" : "N/A"}</p>
-              <p>Rewards Pending: {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
-              <p>Date & Time: {formatDate(transaction.startTime)}</p>
-              <button onClick={() => onUnstake(index)}>
+            <div key={index} className={styles.stakingOption}>
+              <p><strong>Amount Staked:</strong> {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>
+              <p><strong>Lock Period:</strong> {option ? option.period / (24 * 60 * 60) : "N/A"} days</p>
+              <p><strong>Time Staked:</strong> {timeStaked ? Math.floor(timeStaked / (24 * 60 * 60)) : "N/A"} days</p>
+              <p><strong>Time Remaining:</strong> {timeRemaining ? Math.floor(timeRemaining / (24 * 60 * 60)) : "N/A"} days</p>
+              <p><strong>APY:</strong> {option ? option.apy : "N/A"}%</p>
+              <p><strong>Status:</strong> {option ? option.status || "N/A" : "N/A"}</p>
+              <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
+              <p><strong>Date & Time:</strong> {formatDate(transaction.startTime)}</p>
+              <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
                 Unstake
               </button>
-              <p>Warning: Early unstaking may result in loss of rewards.</p>
+              <p><em>Warning: Early unstaking may result in loss of rewards.</em></p>
             </div>
           );
         })
