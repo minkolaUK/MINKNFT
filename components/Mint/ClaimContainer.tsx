@@ -10,6 +10,7 @@ import { NFT_ADDRESS } from "../../const/contractAddresses";
 import styles from "../../styles/Home.module.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {tokenContractAddress} from "../../const/contractAddresses"
 
 interface ClaimContainerProps {
   contract: any; // Adjust the type based on your contract
@@ -20,7 +21,7 @@ interface ClaimContainerProps {
 const MintContainer: React.FC<ClaimContainerProps> = ({ contract , isLoading, error}) => {
 
   const currentUserAddress = useAddress();
-  const { contract: TokenContract, isLoading: loadingToken, error: TokenError }  = useContract("0x9E30F684E03774D0380aa6c6A8151e4789b98a6d")
+  const { contract: TokenContract, isLoading: loadingToken, error: TokenError }  = useContract(tokenContractAddress)
   const { mutateAsync: approve, isLoading: loadingApprove } = useContractWrite(TokenContract, "approve")
 
    //Increment Section

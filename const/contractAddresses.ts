@@ -23,9 +23,10 @@ export const title = "Mink NFT Collection";
 export const description = `"MINK NFT's" Are you  ready to join your digital revolution today.`;
 export const welcome = "Welcome to the MINK NFT Collection";
 export const maxSupply = 50;
-export const mintPrice = 0.5;
+export const mintPrice = 200000;
 export const projectNfts = "Mink NFTs";
 export const maxPerWallet = 50;
+export const currencyName = "MINK";
 
 //4. Social Media
 export const twitterLink = "https://x.com/Mink11904498503";

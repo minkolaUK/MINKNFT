@@ -3,10 +3,10 @@ import { ethers } from "ethers";
 import styles from "../../styles/Home.module.css";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { NFT_ADDRESS, title, description, welcome, maxSupply, mintPrice, maxPerWallet } from "../../const/contractAddresses";
+import { tokenContractAddress,NFT_ADDRESS, title, description, welcome, maxSupply, mintPrice, maxPerWallet, currency, currencyName } from "../../const/contractAddresses";
 import { useSendTransaction } from "thirdweb/react";
 import { claimTo } from "thirdweb/extensions/erc721";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useContract, useContractWrite } from "@thirdweb-dev/react";
 
 interface MintContainerProps {
   contract: any; // Adjust the type based on your contract
@@ -19,6 +19,10 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
   const [quantity] = useState<number>(1); // Always set to 1
   const [totalPrice, setTotalPrice] = useState<number>(parseFloat(mintPrice.toString())); // Calculate the total price for 1 NFT
   const [mintedSuccess, setMintedSuccess] = useState(false);
+
+  const { contract: TokenContract, isLoading: loadingToken, error: TokenError }  = useContract(tokenContractAddress)
+  const { mutateAsync: approve, isLoading: loadingApprove } = useContractWrite(TokenContract, "approve")
+
 
   useEffect(() => {
     // Set the total price based on the mint price and quantity (which is always 1)
@@ -39,16 +43,38 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
     try {
       const receiver = userAddress;
       const qty = BigInt(quantity);
-      const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // Native ETC address
+      const currency = tokenContractAddress; // Native ETC address
       const pricePerToken = ethers.utils.parseEther(mintPrice.toString());
       const allowlistProof = {
         proof: [], // Replace with the actual proof
         quantityLimitPerWallet: BigInt(maxPerWallet), // Ensure this is a BigNumberish type
         pricePerToken: ethers.utils.parseEther(pricePerToken.toString()),
-        currency: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" // Native ETC address
+        currency: tokenContractAddress // Native ETC address
       };
       const data = "0x"; // Replace with actual data if needed
 
+      console.log("Try Mint")
+        const allowance = await TokenContract?.call("allowance",[userAddress,NFT_ADDRESS]);
+        const value = BigInt(mintPrice) * BigInt(10 ** 18);
+        
+        console.log("Allowance: ", allowance)
+        if (allowance < mintPrice){ 
+          // Call the `approve` function of the Token Contract
+          const data = await approve({ args: [NFT_ADDRESS, value] });
+          const call = async () => {
+            try {
+              const data = await approve({ args: [NFT_ADDRESS, value] });
+              console.info("contract call successs", data);
+            } catch (err) {
+              console.error("contract call failure", err);
+            }
+          } 
+     
+        } else {
+          console.log("Tokens are already approved.");
+        }
+
+      console.log("Try Mint Transaction ");
       const mintTransaction = await contract?.call("claim", [
         receiver,
         qty,
@@ -57,8 +83,10 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
         allowlistProof,
         data
       ], {
-        value: ethers.utils.parseEther(totalPrice.toString()), 
+        value: ethers.utils.parseEther("0"), 
       });
+
+      
 
       if (mintTransaction) {
         console.log("MINT SUCCESS");
@@ -176,7 +204,7 @@ const MintContainer: React.FC<MintContainerProps> = ({ contract , isLoading, err
           </div>
           <div>
             <h3>Price Per NFT</h3>
-            <p id="pricePerMint">{mintPrice} ETC</p>
+            <p id="pricePerMint">{mintPrice} {currencyName}</p>
           </div>
           <div>
             <h3>Max Mint</h3>
