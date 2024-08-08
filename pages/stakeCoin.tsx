@@ -51,6 +51,7 @@ const StakeCoin = () => {
       const fetchPendingRewards = async () => {
         try {
           const data = await coinstakingContract.call("calculateReward", [address]);
+          console.log("Rewards: ", data)
           setPendingRewards(ethers.utils.formatUnits(data, 18));
         } catch (error) {
           console.error("Error fetching pending rewards:", error);

@@ -36,6 +36,7 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
     // Penalty parameters
     uint256 public penaltyPercentage = 100; // Reward percentage to lose on early unstaking
+    uint256 private constant SECONDS_IN_A_YEAR = 31557600; // 365.25 days in seconds
 
     // Stake limits
     uint256 public immutable minStakeAmount90Days;
@@ -113,7 +114,6 @@ contract MinkRewards is Ownable, ReentrancyGuard {
         stakingTimestamps[_user] = block.timestamp;
         lockEndTimes[_user] = block.timestamp.add(_lockPeriod);
 
-        // Record staking history
         stakingHistory[_user].push(StakingDetail({
             amount: _amount,
             lockPeriod: _lockPeriod,
@@ -124,30 +124,33 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     }
 
 
-    function unstake(uint256 _amount) external nonReentrant {
-        require(_amount > 0, "Amount must be greater than zero");
-        require(stakes[msg.sender] >= _amount, "Insufficient staked balance");
+    function unstake(uint256 _index) external nonReentrant {
+        require(_index < stakingHistory[msg.sender].length, "Invalid stake index");
 
-        uint256 lockEndTime = lockEndTimes[msg.sender];
-        require(block.timestamp >= lockEndTime, "Tokens are still locked");
+        StakingDetail memory stakeDetail = stakingHistory[msg.sender][_index];
+        require(stakeDetail.amount > 0, "Stake already withdrawn");
+
+        uint256 lockEndTime = stakeDetail.timestamp.add(stakeDetail.lockPeriod);
+        uint256 amountToUnstake = stakeDetail.amount;
+        if (block.timestamp < lockEndTime) {
+            uint256 penaltyAmount = amountToUnstake.mul(penaltyPercentage).div(100);
+            amountToUnstake = amountToUnstake.sub(penaltyAmount);
+            totalRewardsDistributed = totalRewardsDistributed.add(penaltyAmount);
+        }
 
         updateReward(msg.sender);
 
-        // Handle rewards penalty for early unstaking
-        if (_amount == stakes[msg.sender]) {
-            rewards[msg.sender] = 0; // Lose all rewards if unstaking all staked tokens
-        }
+        totalStaked = totalStaked.sub(stakeDetail.amount);
+        stakes[msg.sender] = stakes[msg.sender].sub(stakeDetail.amount);
 
-        // Update state variables before making external calls
-        totalStaked = totalStaked.sub(_amount);
-        stakes[msg.sender] = stakes[msg.sender].sub(_amount);
+        stakingHistory[msg.sender][_index].amount = 0;
 
-        // External call to transfer tokens
-        bool success = minkToken.transfer(msg.sender, _amount);
+        bool success = minkToken.transfer(msg.sender, amountToUnstake);
         require(success, "Token transfer failed");
 
-        emit Unstaked(msg.sender, _amount, block.timestamp);
+        emit Unstaked(msg.sender, stakeDetail.amount, block.timestamp);
     }
+
 
 
     function claimReward() external nonReentrant {
@@ -162,7 +165,6 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
         totalRewardsDistributed = totalRewardsDistributed.add(reward);
 
-        // Record reward history
         rewardHistory[msg.sender].push(reward);
 
         emit RewardPaid(msg.sender, reward, block.timestamp);
@@ -171,7 +173,23 @@ contract MinkRewards is Ownable, ReentrancyGuard {
     function updateReward(address _user) internal {
         uint256 timeElapsed = block.timestamp.sub(lastUpdate[_user]);
         if (stakes[_user] > 0 && timeElapsed > 0) {
-            rewards[_user] = rewards[_user].add((stakes[_user].mul(rewardRate).mul(timeElapsed)).div(REWARD_SCALE));
+            StakingDetail[] memory userStakes = stakingHistory[_user];
+            uint256 totalNewReward = 0;
+
+            for (uint256 i = 0; i < userStakes.length; i++) {
+                if (userStakes[i].amount > 0) {
+                    uint256 apy = getAPY(userStakes[i].lockPeriod);
+                    uint256 amount = userStakes[i].amount;
+                    uint256 newReward = amount
+                    .mul(apy)
+                    .mul(timeElapsed)
+                    .div(SECONDS_IN_A_YEAR)
+                    .div(100);
+                    totalNewReward = totalNewReward.add(newReward);
+                }
+            }
+
+            rewards[_user] = rewards[_user].add(totalNewReward);
         }
         lastUpdate[_user] = block.timestamp;
     }
@@ -224,7 +242,39 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
     function calculateReward(address _user) public view returns (uint256) {
         uint256 timeElapsed = block.timestamp.sub(lastUpdate[_user]);
-        return (stakes[_user].mul(rewardRate).mul(timeElapsed)).div(REWARD_SCALE).add(rewards[_user]);
+        if (timeElapsed == 0 || stakes[_user] == 0) {
+            return rewards[_user];
+        }
+        StakingDetail[] memory userStakes = stakingHistory[_user];
+        uint256 totalNewReward = 0;
+
+        for (uint256 i = 0; i < userStakes.length; i++) {
+            if (userStakes[i].amount > 0) {
+                uint256 apy = getAPY(userStakes[i].lockPeriod);
+                uint256 amount = userStakes[i].amount;
+                // Convert APY to a decimal percentage
+                uint256 newReward = amount
+                    .mul(apy)
+                    .mul(timeElapsed)
+                    .div(SECONDS_IN_A_YEAR)
+                    .div(100);
+                totalNewReward = totalNewReward.add(newReward);
+            }
+        }
+
+        return rewards[_user].add(totalNewReward);
+    }
+
+    function getAPY(uint256 _lockPeriod) internal pure returns (uint256) {
+        if (_lockPeriod == 90 days) {
+            return 200; // 2.00% APY as 200 in scaled format
+        } else if (_lockPeriod == 180 days) {
+            return 250; // 2.50% APY as 250 in scaled format
+        } else if (_lockPeriod == 365 days) {
+            return 300; // 3.00% APY as 300 in scaled format
+        } else {
+            revert("Invalid lock period");
+        }
     }
 
     function calculateAPY() public view returns (uint256) {

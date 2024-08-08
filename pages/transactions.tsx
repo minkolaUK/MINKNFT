@@ -87,8 +87,10 @@ const MyTransactions: React.FC = () => {
   const handleUnstake = async (index: number): Promise<void> => {
     if (!coinstakingContract) return;
     try {
-      await unstake({ args: [index] });
-      toast.success("Unstaked successfully");
+      const unstakeTx = await coinstakingContract.call("unstake", [index]);
+      if(unstakeTx){
+        toast.success("Unstaked successfully");
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "An unexpected error occurred";
       console.error("Error unstaking tokens:", error);
