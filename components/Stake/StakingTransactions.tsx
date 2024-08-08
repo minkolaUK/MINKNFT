@@ -81,7 +81,7 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
               <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
                 Unstake
               </button>
-              <p><em>Warning: Early unstaking may result in loss of rewards.</em></p>
+              <p><em>Warning: Early unstaking will result in loss of rewards.</em></p>
             </div>
           );
         })
