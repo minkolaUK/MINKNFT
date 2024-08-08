@@ -70,11 +70,11 @@ const calculateTimeStaked = (startTime: BigNumber, lockPeriod: BigNumber) => {
               <p><strong>APY:</strong> {option ? option.apy : "N/A"}%</p>
               <p><strong>Status:</strong> {option ? option.status : "N/A"}</p>
               <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(transaction.rewardsPending, 18)} MINK</p>
-              <p><strong>Date & Time:</strong> {formatDate(transaction.startTime.toNumber())}</p>
+              <p><strong>Date & Time Staked:</strong> {formatDate(transaction.startTime.toNumber())}</p>
               <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
                 Unstake
               </button>
-              <p><em>Warning: Early unstaking may result in loss of rewards.</em></p>
+              <p><em>Warning: Early unstaking will result in loss of rewards.</em></p>
             </div>
           );
         })
