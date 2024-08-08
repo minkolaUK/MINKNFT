@@ -184,7 +184,7 @@ contract MinkRewards is Ownable, ReentrancyGuard {
                     .mul(apy)
                     .mul(timeElapsed)
                     .div(SECONDS_IN_A_YEAR)
-                    .div(100);
+                    .div(10000);
                     totalNewReward = totalNewReward.add(newReward);
                 }
             }
@@ -257,7 +257,7 @@ contract MinkRewards is Ownable, ReentrancyGuard {
                     .mul(apy)
                     .mul(timeElapsed)
                     .div(SECONDS_IN_A_YEAR)
-                    .div(100);
+                    .div(10000);
                 totalNewReward = totalNewReward.add(newReward);
             }
         }
@@ -287,5 +287,9 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
     function getTotalRewardsDistributed() external view returns (uint256) {
         return totalRewardsDistributed;
+    }
+
+    function getTotalStaked() external view returns (uint256) {
+        return totalStaked;
     }
 }

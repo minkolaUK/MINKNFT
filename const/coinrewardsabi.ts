@@ -411,6 +411,19 @@ export const coinRewardsAbi = [
   },
   {
     "type": "function",
+    "name": "getTotalStaked",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "lockPeriod180Days",
     "inputs": [],
     "outputs": [

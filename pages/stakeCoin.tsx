@@ -26,10 +26,10 @@ const StakeCoin = () => {
     "getStakedBalance",
     [address]
   );
-  const { data: totalStaked, error: totalStakedError } = useContractRead(coinstakingContract, "getTotalStakedAmount");
+  
+  const { data: totalStaked, error: totalStakedError } = useContractRead(coinstakingContract, "getTotalStaked");
 
-  const { mutate: stake, isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
-  const { mutate: approveTokens, isLoading: isApproveLoading } = useContractWrite(tokenContract, "approve");
+  const {isLoading: isStakeLoading } = useContractWrite(coinstakingContract, "stake");
 
   const [amount, setAmount] = useState<string>("");
   const [lockPeriod, setLockPeriod] = useState<number>(0);
@@ -51,7 +51,6 @@ const StakeCoin = () => {
       const fetchPendingRewards = async () => {
         try {
           const data = await coinstakingContract.call("calculateReward", [address]);
-          console.log("Rewards: ", data)
           setPendingRewards(ethers.utils.formatUnits(data, 18));
         } catch (error) {
           console.error("Error fetching pending rewards:", error);

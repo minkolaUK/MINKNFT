@@ -16,9 +16,10 @@ interface StakingTransactionsProps {
   stakingOptions: { period: number; apy: number; status: string }[];
   onUnstake: (index: number) => Promise<void>;
   totalAmountStaked: ethers.BigNumber | null;
+  totalRewards: string;
 }
 
-const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake, totalAmountStaked }) => {
+const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransactions, stakingOptions, onUnstake, totalAmountStaked, totalRewards }) => {
   // Format timestamp into a readable date
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
@@ -61,6 +62,8 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
         Total Amount Staked:{" "}
         {totalAmountStaked ? ethers.utils.formatUnits(totalAmountStaked, 18) : "Loading..."} MINK
       </p>
+      <p>Your Total Pending Rewards:{" "}
+          {totalRewards} MINK</p>
       
       {stakingTransactions.length > 0 ? (
         stakingTransactions.map((transaction, index) => {

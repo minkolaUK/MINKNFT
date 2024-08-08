@@ -15,7 +15,7 @@ export const REWARDSADDRESS = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
 export const stakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6d";
 export const tokenContractAddress = "0xcbb3DFb966C2A552E486276FA2813BA5618541D1";
 export const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-export const coinstakingContractAddress = "0x1dDCE2A2f4499b9065fbBF18Ecc0A2943D27E159";
+export const coinstakingContractAddress = "0xcb76323c26653771fCB46aEB93A90879d2A98F4B";
 
 
 //3. Descriptions

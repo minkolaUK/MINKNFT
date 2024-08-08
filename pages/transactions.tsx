@@ -26,7 +26,24 @@ const MyTransactions: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [stakingTransactions, setStakingTransactions] = useState<any[]>([]);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [pendingRewards, setPendingRewards] = useState<string>("0.0000 MINK");
+
   
+  useEffect(() => {
+    if (address && coinstakingContract) {
+      const fetchPendingRewards = async () => {
+        try {
+          const data = await coinstakingContract.call("calculateReward", [address]);
+          console.log("Rewards: ", data)
+          setPendingRewards(ethers.utils.formatUnits(data, 18));
+        } catch (error) {
+          console.error("Error fetching pending rewards:", error);
+        }
+      };
+      fetchPendingRewards();
+    }
+  }, [address, coinstakingContract]);
+
   useEffect(() => {
     if (stakingHistoryError) {
       const message = stakingHistoryError instanceof Error ? stakingHistoryError.message : "Error fetching staking history. Please try again later.";
@@ -109,6 +126,7 @@ const MyTransactions: React.FC = () => {
           stakingOptions={stakingOptions}
           onUnstake={handleUnstake}
           totalAmountStaked={totalAmountStaked}
+          totalRewards={pendingRewards}
         />
       </div>
     </div>
