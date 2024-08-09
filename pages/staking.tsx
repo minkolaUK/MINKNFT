@@ -105,6 +105,107 @@ const toastFail = () => {
 
 }
 
+async function stakeAllNfts() {
+  if (!address || !ownedNfts) return;
+
+  // Collect NFT IDs in an array
+  const nftIds = ownedNfts.map((nft) => nft.metadata.id);
+  
+  // Define batch size
+  const batchSize = 20;
+
+  // Check if the contract is approved
+  const isApproved = await froggieContract?.call("isApprovedForAll", [address, stakingContractAddress]);
+
+  if (!isApproved) {
+    console.log("Checking Approved");
+    await froggieContract?.call("setApprovalForAll", [stakingContractAddress, true]);
+  }
+
+  // Process in batches of 20
+  for (let i = 0; i < nftIds.length; i += batchSize) {
+    const batch = nftIds.slice(i, i + batchSize);
+
+    try {
+      const stake = await contract?.call("stake", [batch]);
+      if (stake) {
+        console.log(`Staking batch ${i / batchSize + 1} Successful`);
+        toast.success(`Staking batch ${i / batchSize + 1} Successful!`, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    } catch (error) {
+      console.error(`Staking batch ${i / batchSize + 1} Failed`, error);
+      toast.error(`Staking batch ${i / batchSize + 1} Failed!`, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      break; // Exit the loop on error
+    }
+  }
+}
+async function withdrawAllNfts() {
+  if (!address || !stakedTokens) return;
+
+  // Collect staked NFT IDs in an array
+  const nftIds = stakedTokens[0]?.map((token: BigNumber) => token.toString());
+
+  if (!nftIds || nftIds.length === 0) {
+    console.log("No staked NFTs found");
+    return;
+  }
+
+  // Define batch size
+  const batchSize = 20;
+
+  // Process in batches of 20
+  for (let i = 0; i < nftIds.length; i += batchSize) {
+    const batch = nftIds.slice(i, i + batchSize);
+
+    try {
+      const withdraw = await contract?.call("withdraw", [batch]);
+      if (withdraw) {
+        console.log(`Withdrawal batch ${i / batchSize + 1} Successful`);
+        toast.success(`Withdrawal batch ${i / batchSize + 1} Successful!`, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    } catch (error) {
+      console.error(`Withdrawal batch ${i / batchSize + 1} Failed`, error);
+      toast.error(`Withdrawal batch ${i / batchSize + 1} Failed!`, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      break; // Exit the loop on error
+    }
+  }
+}
 
   if (isLoading) {
     return <div className={stylesHome.main}><div>Loading...</div></div>
@@ -145,8 +246,7 @@ const toastFail = () => {
                                           </b> {tokenBalance?.symbol}
                                       </p>
                                   </div>
-                              </div>
-                              <Web3Button
+                                  <Web3Button
                                   action={async (contract) => {
                                       await contract.call("claimRewards");
                                       // Update claimable rewards state after claiming
@@ -158,12 +258,21 @@ const toastFail = () => {
                               >
                                   Claim Rewards
                               </Web3Button>
+                              </div>
+                              
 
                           </div>
 
 
                           <hr className={`${stylesHome.divider} ${stylesHome.spacerTop}`} />
                           <h2>Your Staked MINK NFTs</h2>
+                          <Web3Button
+                            contractAddress={stakingContractAddress}
+                            action={() => withdrawAllNfts()}
+                            className={stylesHome.Web3Button}
+                          >
+                            Withdraw All
+                          </Web3Button>
                           <div className={stylesHome.nftBoxGrid}>
                               {stakedTokens &&
                                   stakedTokens[0]?.map((stakedToken: BigNumber) => (
@@ -175,6 +284,13 @@ const toastFail = () => {
 
                           <hr className={`${stylesHome.divider} ${stylesHome.spacerTop}`} />
                           <h2>Your Unstaked MINK NFTs</h2>
+                          <Web3Button
+                            contractAddress={stakingContractAddress}
+                            action={() => stakeAllNfts()}
+                            className={stylesHome.Web3Button}
+                          >
+                            Stake All
+                          </Web3Button>
                           <div className={stylesHome.nftBoxGrid}>
                               {ownedNfts?.map((nft) => (
                                   <div className={stylesHome.nftBox} key={nft.metadata.id.toString()}>
