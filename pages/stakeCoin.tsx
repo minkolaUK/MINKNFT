@@ -12,7 +12,7 @@ import Link from "next/link";
 const stakingOptions = [
   { period: 90 * 24 * 60 * 60, apy: 2, minAmount: ethers.utils.parseUnits("1000", 18), maxAmount: "Unlimited", status: 'Active' },
   { period: 180 * 24 * 60 * 60, apy: 2.5, minAmount: ethers.utils.parseUnits("10000", 18), maxAmount: "Unlimited", status: 'Active' },
-  { period: 365 * 24 * 60 * 60, apy: 3, minAmount: ethers.utils.parseUnits("1000000", 18), maxAmount: "Unlimited", status: 'Active' },
+  { period: 365 * 24 * 60 * 60, apy: 3, minAmount: ethers.utils.parseUnits("100000", 18), maxAmount: "Unlimited", status: 'Active' },
 ];
 
 const StakeCoin = () => {
@@ -146,7 +146,7 @@ const StakeCoin = () => {
     // Define specific minimum amounts for each lock period
     const minAmount90Days = ethers.utils.parseUnits("1000", 18);
     const minAmount180Days = ethers.utils.parseUnits("10000", 18);
-    const minAmount365Days = ethers.utils.parseUnits("1000000", 18);
+    const minAmount365Days = ethers.utils.parseUnits("100000", 18);
 
     // Determine the minimum amount required based on the selected lock period
     let requiredMinAmount;

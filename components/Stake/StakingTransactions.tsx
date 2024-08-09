@@ -81,10 +81,14 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
               <p><strong>Status:</strong> {transaction.amount.isZero() ? "Unstaked" : (option ? option.status : "N/A")}</p>
               <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(rewardsPending, 18)} MINK</p>
               <p><strong>Date & Time:</strong> {formatDate(transaction.startTime.toNumber())}</p>
-              <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
-                Unstake
-              </button>
-              <p><em>Warning: Early unstaking will result in loss of rewards.</em></p>
+              {!transaction.amount.isZero() && (
+                <>
+                <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
+                  Unstake
+                </button>
+                <p><em>Warning: Early unstaking will result in loss of rewards.</em></p>
+                </>
+              )}
             </div>
           );
         })
