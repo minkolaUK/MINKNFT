@@ -74,13 +74,14 @@ const StakingTransactions: React.FC<StakingTransactionsProps> = ({ stakingTransa
           return (
             <div key={index} className={styles.stakingOption}>
               <p><strong>Amount Staked:</strong> {ethers.utils.formatUnits(transaction.amount, 18)} MINK</p>
-              <p><strong>Lock Period:</strong> {option ? (option.period / (24 * 60 * 60)).toFixed(0) : "N/A"} days</p>
-              <p><strong>Time Staked:</strong> {Math.floor(timeStaked / (24 * 60 * 60)).toFixed(0)} days</p>
-              <p><strong>Time Remaining:</strong> {Math.floor(timeRemaining / (24 * 60 * 60)).toFixed(0)} days</p>
-              <p><strong>APY:</strong> {option ? option.apy : "N/A"}%</p>
+              <p><strong>Lock Period:</strong> {transaction.amount.isZero() ? "0" : option ? (option.period / (24 * 60 * 60)).toFixed(0) : "N/A"} days</p>
+              <p><strong>Time Staked:</strong> {transaction.amount.isZero() ? "0" : Math.floor(timeStaked / (24 * 60 * 60)).toFixed(0)} days</p>
+              <p><strong>Time Remaining:</strong> {transaction.amount.isZero() ? "0" : Math.floor(timeRemaining / (24 * 60 * 60)).toFixed(0)} days</p>
+              <p><strong>APY:</strong> {transaction.amount.isZero() ? "0" : option ? option.apy : "N/A"}%</p>
               <p><strong>Status:</strong> {transaction.amount.isZero() ? "Unstaked" : (option ? option.status : "N/A")}</p>
               <p><strong>Rewards Pending:</strong> {ethers.utils.formatUnits(rewardsPending, 18)} MINK</p>
               <p><strong>Date & Time:</strong> {formatDate(transaction.startTime.toNumber())}</p>
+              
               {!transaction.amount.isZero() && (
                 <>
                 <button onClick={() => onUnstake(index)} className={styles.unstakeButton}>
