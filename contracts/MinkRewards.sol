@@ -132,13 +132,15 @@ contract MinkRewards is Ownable, ReentrancyGuard {
 
         uint256 lockEndTime = stakeDetail.timestamp.add(stakeDetail.lockPeriod);
         uint256 amountToUnstake = stakeDetail.amount;
-        if (block.timestamp < lockEndTime) {
-            uint256 penaltyAmount = amountToUnstake.mul(penaltyPercentage).div(100);
-            amountToUnstake = amountToUnstake.sub(penaltyAmount);
-            totalRewardsDistributed = totalRewardsDistributed.add(penaltyAmount);
-        }
 
-        updateReward(msg.sender);
+        if (block.timestamp >= lockEndTime) {
+            // Unstake after lock period: give initial investment plus rewards
+            updateReward(msg.sender);
+            amountToUnstake = amountToUnstake.add(calculateReward(msg.sender));
+        } else {
+            // Unstake before lock period: give only the initial investment, no rewards
+            // No reward calculation or update here
+        }
 
         totalStaked = totalStaked.sub(stakeDetail.amount);
         stakes[msg.sender] = stakes[msg.sender].sub(stakeDetail.amount);
