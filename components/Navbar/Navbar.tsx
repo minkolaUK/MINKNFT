@@ -47,9 +47,9 @@ export function Navbar() {
         </div>
         <div className={styles.navMiddle}>
           <Link href="/" className={styles.linkheader}>MINT</Link>
+          <Link href="/swap" className={styles.linkheader}>SWAP</Link>
           <Link href="/staking" className={styles.linkheader}>STAKE NFT</Link>
           <Link href="/stakeCoin" className={styles.linkheader}>STAKE COIN</Link>
-          <Link href="/swap" className={styles.linkheader}>SWAP</Link>
           <Link href={`/profile/${address}`} className={styles.linkheader}>GALLERY</Link>
           <Link href="/roadmap" className={styles.linkheader}>ROADMAP</Link>
           <a href="https://minkcoin.netlify.app" target="_blank" rel="noopener noreferrer" className={styles.linkheader}>MINKCOIN</a>
@@ -81,6 +81,9 @@ export function Navbar() {
         <Link href="/" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
           MINT
         </Link>
+        <Link href="/swap" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
+          SWAP
+        </Link>
         <Link href="/staking" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
           STAKE NFT
           </Link>
@@ -89,9 +92,6 @@ export function Navbar() {
           </Link>
         <Link href={`/profile/${address}`} className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
           GALLERY
-        </Link>
-        <Link href="/swap" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
-          SWAP
         </Link>
         <Link href="/roadmap" className={styles.linkheader} onClick={updateMenu} style={{ marginTop: '5px' }}>
           ROADMAP
