@@ -144,7 +144,7 @@ const Swap = () => {
 
         {/* Arrow Indicator */}
         <div className={styles.arrow}>
-          <img src="/arrow-down.svg" alt="Arrow Down" className={styles.arrowImage} />
+          <img src="images\x-icon\arrow-dow.jpg" alt="Arrow Down" className={styles.arrowImage} />
         </div>
 
         {/* To Token Box */}
