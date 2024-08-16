@@ -2,7 +2,7 @@
 
 // 1. Set up the network your smart contracts are deployed to.
 // First, import the chain from the package, then set the NETWORK variable to the chain.
-import { MordorTestnet} from "@thirdweb-dev/chains";
+import { MordorTestnet } from "@thirdweb-dev/chains";
 export const NETWORK = MordorTestnet;
 
 export const ETHERSCAN_URL = "https://etc-mordor.blockscout.com";
@@ -16,8 +16,7 @@ export const stakingContractAddress = "0x9E30F684E03774D0380aa6c6A8151e4789b98a6
 export const tokenContractAddress = "0xcbb3DFb966C2A552E486276FA2813BA5618541D1";
 export const currency = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 export const coinstakingContractAddress = "0x91a181Aa67fC1c25D3142e9dB25D3fFFA8C7A0B2";
-export const etcToMinkSwapContractAddress = "0xF275A32CA0C16a0400c67fB5F5B5a7eb3A2e830B";
-
+export const DEXContractAddress = "0xF275A32CA0C16a0400c67fB5F5B5a7eb3A2e830B";
 
 
 //3. Descriptions

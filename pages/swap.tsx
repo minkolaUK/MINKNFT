@@ -4,14 +4,14 @@ import { ethers } from "ethers";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../styles/Swap.module.css";
-import { etcToMinkSwapContractAddress, tokenContractAddress } from "../const/contractAddresses";
-import { etcToMinkSwapAbi } from '../const/swapabi';
+import { DEXContractAddress, tokenContractAddress } from "../const/contractAddresses";
+import { DEXAbi } from '../const/dexabi';
 import { tokenAbi } from '../const/tokenabi';
 
 const Swap = () => {
   const address = useAddress();
   const sdk = useSDK();
-  const { contract: swapContract } = useContract(etcToMinkSwapContractAddress, etcToMinkSwapAbi);
+  const { contract: swapContract } = useContract(DEXContractAddress, DEXAbi);
   const { contract: tokenContract } = useContract(tokenContractAddress, tokenAbi);
 
   const [fromToken, setFromToken] = useState<string>("ETC");
@@ -54,7 +54,6 @@ const Swap = () => {
       if (!swapContract || !amount) return;
       try {
         const parsedAmount = ethers.utils.parseUnits(amount, 18);
-        // Assuming the swap contract has a method to fetch the quote
         const quoteResponse = await swapContract.call("getQuote", [
           parsedAmount,
           fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
@@ -62,7 +61,6 @@ const Swap = () => {
         ]);
         setQuoteAmount(ethers.utils.formatUnits(quoteResponse, 18));
         
-        // Calculate the price
         const priceResponse = await swapContract.call("getPrice", [
           fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
           toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
@@ -107,18 +105,8 @@ const Swap = () => {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
-      const method = fromToken === "ETC" ? "swapExactETCForTokens" : "swapExactTokensForETC";
-      const route = [
-        fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
-        toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
-      ];
-
-      const tx = await swapContract.call(method, [
-        parsedAmount,
-        route,
-        address,
-        deadline
-      ]);
+      const method = fromToken === "ETC" ? "swapEthTotoken" : "swapTokenToEth";
+      const tx = await swapContract.call(method, [parsedAmount]);
 
       await tx.wait();
       toast.success("Swap successful");
