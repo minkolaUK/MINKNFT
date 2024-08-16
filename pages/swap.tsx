@@ -20,6 +20,7 @@ const Swap = () => {
   const [maxAmount, setMaxAmount] = useState<string>("0");
   const [isSwapping, setIsSwapping] = useState<boolean>(false);
   const [quoteAmount, setQuoteAmount] = useState<string>("0");
+  const [price, setPrice] = useState<string>("0");
 
   const fetchBalance = async (token: string) => {
     if (!address) return "0";
@@ -60,6 +61,13 @@ const Swap = () => {
           toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
         ]);
         setQuoteAmount(ethers.utils.formatUnits(quoteResponse, 18));
+        
+        // Calculate the price
+        const priceResponse = await swapContract.call("getPrice", [
+          fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
+          toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
+        ]);
+        setPrice(ethers.utils.formatUnits(priceResponse, 18));
       } catch (error) {
         console.error("Error getting quote:", error);
         toast.error("Error getting quote");
@@ -99,7 +107,6 @@ const Swap = () => {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
-      // Assuming HebeSwap's contract method names are the same
       const method = fromToken === "ETC" ? "swapExactETCForTokens" : "swapExactTokensForETC";
       const route = [
         fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
@@ -181,6 +188,10 @@ const Swap = () => {
             {toToken}
           </div>
         </div>
+      </div>
+
+      <div className={styles.priceDisplay}>
+        Price: {price} {toToken} per {fromToken}
       </div>
 
       <button
