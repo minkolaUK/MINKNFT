@@ -12,7 +12,7 @@ const Swap = () => {
   const address = useAddress();
   const sdk = useSDK();
   const { contract: swapContract } = useContract(etcToMinkSwapContractAddress, etcToMinkSwapAbi);
-  const minkCoinContract = useContract(tokenContractAddress, tokenAbi);
+  const { contract: minkCoinContract } = useContract(tokenContractAddress, tokenAbi);
 
   const [fromToken, setFromToken] = useState<string>("ETC");
   const [toToken, setToToken] = useState<string>("Mink");
@@ -23,13 +23,15 @@ const Swap = () => {
 
   // Function to fetch balances based on token type
   const fetchBalance = async (token: string) => {
-    if (!swapContract || !address) return "0";
+    if (!address) return "0";
     try {
       let balance;
-      if (token === "ETC") {
+      if (token === "ETC" && sdk) {
         balance = await sdk.getProvider().getBalance(address);
-      } else if (token === "Mink") {
-        balance = await minkCoinContract.contract.call("balanceOf", [address]);
+      } else if (token === "Mink" && minkCoinContract) {
+        balance = await minkCoinContract.call("balanceOf", [address]);
+      } else {
+        return "0";
       }
       return ethers.utils.formatUnits(balance, 18);
     } catch (error) {
@@ -46,7 +48,7 @@ const Swap = () => {
     };
 
     fetchBalances();
-  }, [fromToken, address, swapContract, minkCoinContract]);
+  }, [fromToken, address, sdk, minkCoinContract]);
 
   // Fetch quote whenever amount or token changes
   useEffect(() => {
@@ -84,14 +86,21 @@ const Swap = () => {
       return;
     }
 
+    if (fromToken === toToken) {
+      showErrorToast("Cannot swap the same token type. Please select different tokens.");
+      return;
+    }
+
     try {
       setIsSwapping(true);
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
-      const method = fromToken === "ETC" ? "swapExactETCForTokens" : "swapExactTokensForETC"; // Adjust based on token swap direction
-      const route = [fromToken === "ETC" ? ethers.constants.AddressZero : minkCoinContract, 
-                     toToken === "ETC" ? ethers.constants.AddressZero : minkCoinContract];
+      const method = fromToken === "ETC" ? "swapExactETCForTokens" : "swapExactTokensForETC";
+      const route = [
+        fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
+        toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
+      ];
 
       const tx = await swapContract.call(method, [
         parsedAmount,
@@ -108,6 +117,14 @@ const Swap = () => {
     } finally {
       setIsSwapping(false);
     }
+  };
+
+  const handleFromTokenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedFromToken = e.target.value;
+    setFromToken(selectedFromToken);
+
+    // Automatically set the "To" token to the other option
+    setToToken(selectedFromToken === "ETC" ? "Mink" : "ETC");
   };
 
   return (
@@ -137,7 +154,7 @@ const Swap = () => {
           <select
             className={styles.select}
             value={fromToken}
-            onChange={(e) => setFromToken(e.target.value)}
+            onChange={handleFromTokenChange}
           >
             <option value="ETC">ETC</option>
             <option value="Mink">Mink Coin</option>
@@ -161,14 +178,10 @@ const Swap = () => {
             placeholder="Estimated amount"
             readOnly
           />
-          <select
-            className={styles.select}
-            value={toToken}
-            onChange={(e) => setToToken(e.target.value)}
-          >
-            <option value="ETC">ETC</option>
-            <option value="Mink">Mink Coin</option>
-          </select>
+          {/* Display only the "To" token without a dropdown */}
+          <div className={styles.tokenDisplay}>
+            {toToken}
+          </div>
         </div>
       </div>
 

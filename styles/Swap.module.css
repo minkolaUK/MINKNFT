@@ -85,6 +85,12 @@
   font-size: 16px;
 }
 
+.tokenDisplay {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
 .swapButton:disabled {
   background-color: #555;
   cursor: not-allowed;
