@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useAddress, useContract, useTokenBalance } from "@thirdweb-dev/react";
+import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../styles/Swap.module.css";
 import { etcToMinkSwapContractAddress, tokenContractAddress } from "../const/contractAddresses";
 import { etcToMinkSwapAbi } from '../const/swapabi';
+import { tokenAbi } from '../const/tokenabi';
 
 const Swap = () => {
   const address = useAddress();
+  const sdk = useSDK();
   const { contract: swapContract } = useContract(etcToMinkSwapContractAddress, etcToMinkSwapAbi);
-
-  const { contract: etcTokenContract } = useContract(tokenContractAddress.ETC, "token");
-  const { contract: minkTokenContract } = useContract(tokenContractAddress.Mink, "token");
-
-  const { data: etcBalance } = useTokenBalance(etcTokenContract, address);
-  const { data: minkBalance } = useTokenBalance(minkTokenContract, address);
+  const minkCoinContract = useContract(tokenContractAddress, tokenAbi);
 
   const [fromToken, setFromToken] = useState<string>("ETC");
   const [toToken, setToToken] = useState<string>("Mink");
@@ -23,25 +20,44 @@ const Swap = () => {
   const [maxAmount, setMaxAmount] = useState<string>("0");
   const [isSwapping, setIsSwapping] = useState<boolean>(false);
   const [quoteAmount, setQuoteAmount] = useState<string>("0");
-  const [isExactInput, setIsExactInput] = useState<boolean>(true); // State to track exact input or output
 
-  useEffect(() => {
-    if (fromToken === "ETC" && etcBalance) {
-      setMaxAmount(ethers.utils.formatUnits(etcBalance, 18));
-    } else if (fromToken === "Mink" && minkBalance) {
-      setMaxAmount(ethers.utils.formatUnits(minkBalance, 18));
+  // Function to fetch balances based on token type
+  const fetchBalance = async (token: string) => {
+    if (!swapContract || !address) return "0";
+    try {
+      let balance;
+      if (token === "ETC") {
+        balance = await sdk.getProvider().getBalance(address);
+      } else if (token === "Mink") {
+        balance = await minkCoinContract.contract.call("balanceOf", [address]);
+      }
+      return ethers.utils.formatUnits(balance, 18);
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      return "0";
     }
-  }, [fromToken, etcBalance, minkBalance]);
+  };
 
+  // Fetch balance whenever fromToken changes
+  useEffect(() => {
+    const fetchBalances = async () => {
+      const balance = await fetchBalance(fromToken);
+      setMaxAmount(balance);
+    };
+
+    fetchBalances();
+  }, [fromToken, address, swapContract, minkCoinContract]);
+
+  // Fetch quote whenever amount or token changes
   useEffect(() => {
     const fetchQuote = async () => {
       if (!swapContract || !amount) return;
       try {
         const parsedAmount = ethers.utils.parseUnits(amount, 18);
-        const quoteResponse = await swapContract.call("getQuote", [
-          fromToken === "ETC" ? tokenContractAddress.ETC : tokenContractAddress.Mink,
-          toToken === "Mink" ? tokenContractAddress.Mink : tokenContractAddress.ETC,
-          parsedAmount
+        const quoteResponse = await swapContract.call("quote", [
+          parsedAmount,
+          await swapContract.call("getReserveA"),
+          await swapContract.call("getReserveB")
         ]);
         setQuoteAmount(ethers.utils.formatUnits(quoteResponse, 18));
       } catch (error) {
@@ -73,44 +89,16 @@ const Swap = () => {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
-      let tx;
-      if (fromToken === "ETC") {
-        // ETC -> Mink Swap
-        if (isExactInput) {
-          tx = await swapContract.call("swapExactInputSingle", [
-            parsedAmount,
-            tokenContractAddress.Mink, // The token we want to receive
-            address,
-            deadline,
-          ]);
-        } else {
-          tx = await swapContract.call("swapExactOutputSingle", [
-            ethers.utils.parseUnits(quoteAmount, 18),
-            parsedAmount,
-            tokenContractAddress.Mink, // The token we want to receive
-            address,
-            deadline,
-          ]);
-        }
-      } else {
-        // Mink -> ETC Swap
-        if (isExactInput) {
-          tx = await swapContract.call("swapExactInputSingle", [
-            parsedAmount,
-            tokenContractAddress.ETC, // The token we want to receive
-            address,
-            deadline,
-          ]);
-        } else {
-          tx = await swapContract.call("swapExactOutputSingle", [
-            ethers.utils.parseUnits(quoteAmount, 18),
-            parsedAmount,
-            tokenContractAddress.ETC, // The token we want to receive
-            address,
-            deadline,
-          ]);
-        }
-      }
+      const method = fromToken === "ETC" ? "swapExactETCForTokens" : "swapExactTokensForETC"; // Adjust based on token swap direction
+      const route = [fromToken === "ETC" ? ethers.constants.AddressZero : minkCoinContract, 
+                     toToken === "ETC" ? ethers.constants.AddressZero : minkCoinContract];
+
+      const tx = await swapContract.call(method, [
+        parsedAmount,
+        route,
+        address,
+        deadline
+      ]);
 
       await tx.wait();
       toast.success("Swap successful");
@@ -128,6 +116,7 @@ const Swap = () => {
       <div className={styles.header}>Token Swap</div>
 
       <div className={styles.swapBox}>
+        {/* From Token Box */}
         <div className={styles.box}>
           <div className={styles.boxHeader}>
             From: {fromToken} (Balance: {maxAmount} {fromToken})
@@ -155,10 +144,12 @@ const Swap = () => {
           </select>
         </div>
 
+        {/* Arrow Indicator */}
         <div className={styles.arrow}>
-          <img src=".\images\x-icon\arrow-dow.jpg" alt="Arrow Down" className={styles.arrowImage} />
+          <img src="images/x-icon/arrow-down.jpg" alt="Arrow Down" className={styles.arrowImage} />
         </div>
 
+        {/* To Token Box */}
         <div className={styles.box}>
           <div className={styles.boxHeader}>
             To: {toToken} (Estimated: {quoteAmount} {toToken})
@@ -179,27 +170,6 @@ const Swap = () => {
             <option value="Mink">Mink Coin</option>
           </select>
         </div>
-      </div>
-
-      <div className={styles.toggle}>
-        <label>
-          <input
-            type="radio"
-            value="exactInput"
-            checked={isExactInput}
-            onChange={() => setIsExactInput(true)}
-          />
-          Exact Input
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="exactOutput"
-            checked={!isExactInput}
-            onChange={() => setIsExactInput(false)}
-          />
-          Exact Output
-        </label>
       </div>
 
       <button
