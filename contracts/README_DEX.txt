@@ -1,25 +1,19 @@
-This is a Solidity contract for an ERC-20 token exchange or DEX (Decentralized Exchange). It's named `ETCDex`. Here are some of the key components:
+This is a Solidity contract for an Ethereum decentralized exchange (DEX) known as `ETCDex`. It's designed to facilitate trading of ERC20 tokens with ETH using liquidity pools. Here are some key points about this contract:
 
-1. **Imports**: The code begins with importing various OpenZeppelin contracts and libraries, which provide reusable security features, math operations, and ownership functionalities for smart contracts.
+- The contract imports several OpenZeppelin libraries, including `IERC20` for interacting with ERC20 tokens, `SafeERC20` for safe token transfers, `ReentrancyGuard` and `Ownable` for security measures, and `SafeMath` for mathematical operations that can't underflow or overflow.
 
-2. **Contract Definition**: `ETCDex` is a contract that inherits from the Ownable (for access control) and ReentrancyGuard (to protect against re-entrant calls) contracts provided by OpenZeppelin. 
+- The contract defines a struct `LockedLiquidity` to hold the information about locked liquidity by users. It also has an array `history` to store historical events of the trading process.
 
-3. **State Variables**: Several state variables are declared, including an `IERC20` token for exchange, a fee percentage (defaulting to 0.3%), and the total liquidity in the pool.
+- There are several external functions:
+  - `addLiquidity(uint256 tokenAmount)` allows a user to add liquidity into the pool with ETH and receive liquidity tokens in return.
+  - `removeLiquidity(uint256 liquidity)` removes liquidity from the pool and returns the user their original ERC20 token balance and ETH.
+  - `swapETCForTokensWithSlippage(uint256 minTokens)` allows a user to swap ETH for tokens with a minimum amount of tokens expected, taking into account potential slippage.
+  - `swapTokensForETCWithSlippage(uint256 tokenAmount, uint256 minETC)` does the opposite: it swaps a certain amount of tokens for ETH, with a minimum amount of ETH to receive.
+  
+- The contract also has functions related to reward distribution and compounding, as well as functionality for locking liquidity for a specified period. 
 
-4. **Events**: Events are emitted on various actions like when liquidity is added or removed, as well as when ETH is swapped for tokens or vice versa.
+- There are several internal helper functions such as `_mint(address to, uint256 amount)` and `_burn(address from, uint256 amount)` that handle the creation and destruction of liquidity tokens.
 
-5. **Constructor**: The constructor sets the initial owner of the contract and stores the ERC20 token being used for exchange. It also checks that the provided token address is not zero.
+- The contract is upgradeable by its owner and it includes a function for withdrawing fees. 
 
-6. **Modifiers**: There's a `validReserves` modifier, which ensures there are sufficient liquidity reserves in both tokens and ETH to perform an operation. 
-
-7. **Functions**: The contract provides several functions for interacting with the exchange:
-   - `addLiquidity(uint256 tokenAmount)` allows users to add liquidity by depositing a certain amount of their ERC20 tokens and ETH into the pool.
-   - `removeLiquidity(uint256 liquidity)` allows users to remove liquidity from the pool in exchange for an equivalent amount of both ERC20 tokens and ETH.
-   - `swapETCForTokens()` allows users to swap a certain amount of ETH (with no token deposit) into their chosen ERC20 token.
-   - `swapTokensForETC(uint256 tokenAmount)` allows users to swap a certain amount of an ERC20 token (with no ETH deposit) for ETH. 
-   
-8. **Private Functions**: Two private functions, `_mint()` and `_burn()`, are used for minting and burning liquidity tokens respectively. These functions currently have placeholders as they don't actually implement the logic required for these operations in this contract but would be needed for a full-fledged DEX like Uniswap v2.
-
-9. **Public Functions**: The `totalSupply()` function returns the total liquidity, which is equivalent to the supply of the pool's tokens (the number of tokens that can be minted or burned). 
-
-10. **Setter Function**: There's a public function `setFeePercentage(uint256 _feePercentage)`, which allows the owner to set a new fee percentage for swaps (with max of 10%). This can be adjusted as needed by the contract's owner.
+This contract has various events logged in its event section for better tracking of actions on the blockchain. It uses SafeMath for mathematical operations to prevent underflows or overflows, ReentrancyGuard to protect against re-entrancy attacks, and Ownable for access control. It's important to note that this contract doesn’t include a Pause function like some other contracts may have, so transactions can still be executed even if the owner of the contract changes.
