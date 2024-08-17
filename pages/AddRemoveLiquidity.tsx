@@ -36,7 +36,7 @@ const AddRemoveLiquidity = () => {
       } else {
         return "0";
       }
-      return ethers.utils.formatUnits(balance, 18);
+      return ethers.utils.formatUnits(balance, token === "ETC" ? 18 : 18);
     } catch (error) {
       console.error("Error fetching balance:", error);
       return "0";
@@ -76,7 +76,7 @@ const AddRemoveLiquidity = () => {
       const parsedAmount = ethers.utils.parseUnits(addAmount, 18);
       let tx;
       if (addFromToken === "ETC") {
-        tx = await swapContract.call("addLiquidityETC", [parsedAmount], { value: parsedAmount });
+        tx = await swapContract.call("addLiquidityETC", [], { value: parsedAmount });
       } else {
         tx = await swapContract.call("addLiquidityTokens", [parsedAmount]);
       }
