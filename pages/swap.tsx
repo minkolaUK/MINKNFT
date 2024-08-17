@@ -3,6 +3,7 @@ import { useAddress, useContract, useSDK } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";  // Import Link for navigation
 import styles from "../styles/Swap.module.css";
 import { DEXContractAddress, tokenContractAddress } from "../const/contractAddresses";
 import { DEXAbi } from '../const/dexabi';
@@ -54,13 +55,13 @@ const Swap = () => {
       if (!swapContract || !amount) return;
       try {
         const parsedAmount = ethers.utils.parseUnits(amount, 18);
-        const quoteResponse = await swapContract.call("getQuote", [
+        const quoteResponse = await swapContract.call("getAmountOfTokens", [
           parsedAmount,
           fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
           toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
         ]);
         setQuoteAmount(ethers.utils.formatUnits(quoteResponse, 18));
-        
+
         const priceResponse = await swapContract.call("getPrice", [
           fromToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress,
           toToken === "ETC" ? ethers.constants.AddressZero : tokenContractAddress
@@ -105,8 +106,12 @@ const Swap = () => {
       const parsedAmount = ethers.utils.parseUnits(amount, 18);
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20;
 
-      const method = fromToken === "ETC" ? "swapEthTotoken" : "swapTokenToEth";
-      const tx = await swapContract.call(method, [parsedAmount]);
+      let tx;
+      if (fromToken === "ETC") {
+        tx = await swapContract.call("swapETCForTokens", [parsedAmount], { value: parsedAmount });
+      } else {
+        tx = await swapContract.call("swapTokensForETC", [parsedAmount]);
+      }
 
       await tx.wait();
       toast.success("Swap successful");
@@ -189,6 +194,13 @@ const Swap = () => {
       >
         {isSwapping ? "Swapping..." : "Swap"}
       </button>
+
+      {/* Buttons to navigate to Add and Remove Liquidity pages */}
+      <div className={styles.liquidityButtons}>
+        <Link href="/AddRemoveLiquidity" className={styles.liquidityButton}>
+          Add/Remove Liquidity
+        </Link>
+      </div>
     </div>
   );
 };
