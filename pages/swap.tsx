@@ -197,7 +197,7 @@ const Swap = () => {
 
       {/* Buttons to navigate to Add and Remove Liquidity pages */}
       <div className={styles.liquidityButtons}>
-        <Link href="/AddRemoveLiquidity" className={styles.liquidityButton}>
+        <Link href="/addRemoveLiquidity" className={styles.liquidityButton}>
           Add/Remove Liquidity
         </Link>
       </div>
