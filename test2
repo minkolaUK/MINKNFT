@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texas Hold'em Advisor</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    button.card {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+    }
+    .selected-cards {
+      margin: 10px;
+    }
+    .selected-cards span {
+      margin: 5px;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Texas Hold'em Advisor (KISS)</h1>
+
+  <h2>Select Hole Cards (2)</h2>
+  <div id="hole-cards" class="selected-cards"></div>
+
+  <h2>Select Community Cards (up to 5)</h2>
+  <div id="community-cards" class="selected-cards"></div>
+
+  <div class="card-grid" id="card-buttons"></div>
+
+  <button onclick="clearAll()">Clear All</button>
+  <button onclick="evaluateHand()">Evaluate</button>
+
+  <h2 id="result"></h2>
+
+  <script>
+    const suits = ['s', 'h', 'd', 'c'];
+    const suitSymbols = {'s':'♠','h':'♥','d':'♦','c':'♣'};
+    const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+    let holeCards = [];
+    let communityCards = [];
+
+    const cardButtonsDiv = document.getElementById("card-buttons");
+    const holeDiv = document.getElementById("hole-cards");
+    const commDiv = document.getElementById("community-cards");
+    const resultEl = document.getElementById("result");
+
+    function renderButtons() {
+      for (const s of suits) {
+        for (const r of ranks) {
+          const card = r + s;
+          const btn = document.createElement("button");
+          btn.className = "card";
+          btn.textContent = r + suitSymbols[s];
+          btn.onclick = () => selectCard(card);
+          cardButtonsDiv.appendChild(btn);
+        }
+      }
+    }
+
+    function selectCard(card) {
+      if ([...holeCards, ...communityCards].includes(card)) return alert("Duplicate card");
+
+      if (holeCards.length < 2) {
+        holeCards.push(card);
+      } else if (communityCards.length < 5) {
+        communityCards.push(card);
+      } else {
+        alert("Maximum cards selected");
+      }
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      holeDiv.innerHTML = holeCards.map(c => `<span>${formatCard(c)}</span>`).join('');
+      commDiv.innerHTML = communityCards.map(c => `<span>${formatCard(c)}</span>`).join('');
+    }
+
+    function formatCard(c) {
+      return c[0] + suitSymbols[c[1]];
+    }
+
+    function clearAll() {
+      holeCards = [];
+      communityCards = [];
+      updateDisplay();
+      resultEl.textContent = "";
+    }
+
+    function evaluateHand() {
+      if (holeCards.length !== 2 || communityCards.length < 3) {
+        return alert("Need 2 hole cards and at least 3 community cards");
+      }
+      const fakeWinPct = Math.floor(Math.random() * 100);
+      const advice = fakeWinPct < 30 ? 'Fold' : fakeWinPct < 60 ? 'Call' : 'Raise';
+      resultEl.textContent = `Win Chance: ${fakeWinPct}% | Advice: ${advice}`;
+    }
+
+    renderButtons();
+  </script>
+</body>
+</html>
